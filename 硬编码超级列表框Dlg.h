@@ -36,4 +36,10 @@ public:
 	CEdit edit1;
 	afx_msg void OnBnClickedOk();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	//单字节硬编码
+	std::map<CString,CString>  yingbianma;
+	//多字节硬编码
+	std::vector<DuozijieBianMa> yingbianma2;
+	int 地址;
+	int 初始化硬编码map();
 };

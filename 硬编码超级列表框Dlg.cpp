@@ -8,6 +8,7 @@
 #include "硬编码超级列表框Dlg.h"
 #include "afxdialogex.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -107,7 +108,10 @@ BOOL C硬编码超级列表框Dlg::OnInitDialog()
 	list1.InsertColumn(0,"地址", 0,80);
 	list1.InsertColumn(1, "硬编码", 0, 80);
 	list1.InsertColumn(2, "反汇编", 0, 290);
-
+	地址=0;
+	初始化硬编码map();
+	//将CListCtrl添加复选框check控件
+	list1.SetExtendedStyle(LVS_EX_CHECKBOXES | LVS_EX_GRIDLINES);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -167,24 +171,73 @@ void C硬编码超级列表框Dlg::OnBnClickedOk()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	CString str;
+	int 找到 = 0;
+	
 	int index = list1.GetItemCount();
+	CString str地址;
+	
 	edit1.GetWindowText(str);
-
+	
+	
 	if (str.IsEmpty())
 	{
 		MessageBox("请输入硬编码");
 		return;
 	}
-	if (str == "90")
-	{
-		list1.InsertItem(index,"00000000");
-		list1.SetItemText(index, 1, "90");
-		list1.SetItemText(index, 2, "nop");
 
+	str地址.Format("%08X", 地址);
+	//判断单字节硬编码
+	for (auto it = yingbianma.begin(); it != yingbianma.end(); ++it) {
+		if (str== it->first)
+		{
+			地址 += 1;
+			list1.InsertItem(index, str地址);
+			list1.SetItemText(index, 1, it->first);
+			list1.SetItemText(index, 2, it->second);
+			找到 = 1;
+		}
+		TRACE(it->first, it->second,"\n");
 	}
-
+	//判断多字节硬编码
+	for (auto it = yingbianma2.begin(); it != yingbianma2.end(); ++it) {
+		if ((*it).Hardcoding==str.Mid(0,2))
+		{
+			//判断代码长度是否正确
+			if ((*it).Byt > str.GetLength()/2)
+			{
+				MessageBox("错误:字节长度不正确!");
+				return;
+			}
+			
+			list1.InsertItem(index, str地址);
+			
+			if ((*it).Byt > 2)
+			{
+				//多字节的立即数,要颠倒一下顺序
+				CString 多字节立即数;
+				list1.SetItemText(index, 1, (*it).Hardcoding + str.Mid(2,8));
+				多字节立即数 = str.Mid(8, 2) + str.Mid(6, 2) + str.Mid(4, 2) + str.Mid(2, 2);
+				list1.SetItemText(index, 2, (*it).Assembly +"0x" + 多字节立即数);
+			}
+			else
+			{
+				list1.SetItemText(index, 1, (*it).Hardcoding + str.Mid(2, 2));
+				list1.SetItemText(index, 2, (*it).Assembly + "0x" + str.Mid(2, ((*it).Byt - 1) * 2));
+			}
+			地址 += (*it).Byt;
+			找到 = 1;
+		}
+	}
+	if (找到==0)
+	{
+		MessageBox("没有找到的编码!");
+	}
+	
+	edit1.SetWindowText("");
+	
 //	CDialogEx::OnOK();
 }
+
 
 
 int C硬编码超级列表框Dlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -195,5 +248,83 @@ int C硬编码超级列表框Dlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// TODO:  在此添加您专用的创建代码
 	
 
+	return 0;
+}
+
+
+int C硬编码超级列表框Dlg::初始化硬编码map()
+{
+	// TODO: 在此处添加实现代码.
+	//40-47 inc eax-edi
+	yingbianma.insert({ "40","inc eax" });
+	yingbianma.insert({ "41","inc ecx" });
+	yingbianma.insert({ "42","inc edx" });
+	yingbianma.insert({ "43","inc ebx" });
+	yingbianma.insert({ "44","inc esp" });
+	yingbianma.insert({ "45","inc ebp" });
+	yingbianma.insert({ "46","inc esi" });
+	yingbianma.insert({ "47","inc edi" });
+
+	//48-4f  dec eax-edi
+	yingbianma.insert({ "48","dec eax" });
+	yingbianma.insert({ "49","dec ecx" });
+	yingbianma.insert({ "4a","dec edx" });
+	yingbianma.insert({ "4b","dec ebx" });
+	yingbianma.insert({ "4c","dec esp" });
+	yingbianma.insert({ "4d","dec ebp" });
+	yingbianma.insert({ "4e","dec esi" });
+	yingbianma.insert({ "4f","dec edi" });
+
+	//50 - 57  push eax - edi
+	yingbianma.insert({ "50","push eax" });
+	yingbianma.insert({ "51","push ecx" });
+	yingbianma.insert({ "52","push edx" });
+	yingbianma.insert({ "53","push ebx" });
+	yingbianma.insert({ "54","push esp" });
+	yingbianma.insert({ "55","push ebp" });
+	yingbianma.insert({ "56","push esi" });
+	yingbianma.insert({ "57","push edi" });
+
+	//58 - 5f  pop eax - edi
+	yingbianma.insert({ "58","pop eax" });
+	yingbianma.insert({ "59","pop ecx" });
+	yingbianma.insert({ "5a","pop edx" });
+	yingbianma.insert({ "5b","pop ebx" });
+	yingbianma.insert({ "5c","pop esp" });
+	yingbianma.insert({ "5d","pop ebp" });
+	yingbianma.insert({ "5e","pop esi" });
+	yingbianma.insert({ "5f","pop edi" });
+
+	//
+	//XCHG
+	yingbianma.insert({ "90","nop" });
+	yingbianma.insert({ "91","xchg eax,ecx" });
+	yingbianma.insert({ "92","xchg eax,edx" });
+	yingbianma.insert({ "93","xchg eax,ebx" });
+	yingbianma.insert({ "94","xchg eax,esp" });
+	yingbianma.insert({ "95","xchg eax,ebp" });
+	yingbianma.insert({ "96","xchg eax,esi" });
+	yingbianma.insert({ "97","xchg eax,edi" });
+
+	//多字节硬编码
+	//b0 - b7  mov al-bh  占2字节
+	yingbianma2.push_back(DuozijieBianMa("b0","mov al,",2));
+	yingbianma2.push_back(DuozijieBianMa("b1", "mov cl,",2));
+	yingbianma2.push_back(DuozijieBianMa("b2", "mov dl,", 2));
+	yingbianma2.push_back(DuozijieBianMa("b3", "mov bl,", 2));
+	yingbianma2.push_back(DuozijieBianMa("b4", "mov ah,", 2));
+	yingbianma2.push_back(DuozijieBianMa("b5", "mov ch,", 2));
+	yingbianma2.push_back(DuozijieBianMa("b6", "mov dh,", 2));
+	yingbianma2.push_back(DuozijieBianMa("b7", "mov bh,", 2));
+
+	//b8 - bf mov eax-edi 占5个字节
+	yingbianma2.push_back(DuozijieBianMa("b8", "mov eax,", 5));
+	yingbianma2.push_back(DuozijieBianMa("b9", "mov ecx,", 5));
+	yingbianma2.push_back(DuozijieBianMa("ba", "mov edx,", 5));
+	yingbianma2.push_back(DuozijieBianMa("bb", "mov ebx,", 5));
+	yingbianma2.push_back(DuozijieBianMa("bc", "mov esp,", 5));
+	yingbianma2.push_back(DuozijieBianMa("bd", "mov ebp,", 5));
+	yingbianma2.push_back(DuozijieBianMa("be", "mov esi,", 5));
+	yingbianma2.push_back(DuozijieBianMa("bf", "mov edi,", 5));
 	return 0;
 }

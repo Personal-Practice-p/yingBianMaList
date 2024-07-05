@@ -326,5 +326,42 @@ int C硬编码超级列表框Dlg::初始化硬编码map()
 	yingbianma2.push_back(DuozijieBianMa("bd", "mov ebp,", 5));
 	yingbianma2.push_back(DuozijieBianMa("be", "mov esi,", 5));
 	yingbianma2.push_back(DuozijieBianMa("bf", "mov edi,", 5));
+
+	//第二天
+	//单字节
+	yingbianma.insert({ "06","push es" });
+	yingbianma.insert({ "07","pop es" });
+	yingbianma.insert({ "0e","push cs" });
+	yingbianma.insert({ "0f","两个字节编码表 保留" });
+	yingbianma.insert({ "16","push ss" });
+	yingbianma.insert({ "17","pop ss" });
+	yingbianma.insert({ "1e","push ds" });
+	yingbianma.insert({ "1f","pop ds" });
+	yingbianma.insert({ "26","ec(前缀)" });
+	yingbianma.insert({ "27","daa" });
+	yingbianma.insert({ "2e","cs(前缀)" });
+	yingbianma.insert({ "2f","das" });
+	yingbianma.insert({ "36","ss(前缀)" });
+	yingbianma.insert({ "37","aaa" });
+	yingbianma.insert({ "3e","ds(前缀)" });
+	yingbianma.insert({ "3f","aas" });
+
+	//多字节
+	yingbianma2.push_back(DuozijieBianMa("04", "add al,", 2));
+	yingbianma2.push_back(DuozijieBianMa("05", "add eax,", 5));
+	yingbianma2.push_back(DuozijieBianMa("0c", "or al,", 2));
+	yingbianma2.push_back(DuozijieBianMa("0d", "or eax,", 5));
+	yingbianma2.push_back(DuozijieBianMa("14", "adc al,", 2));
+	yingbianma2.push_back(DuozijieBianMa("15", "adc eax,", 5));
+	yingbianma2.push_back(DuozijieBianMa("1c", "sbb al,", 2));
+	yingbianma2.push_back(DuozijieBianMa("1d", "sbb eax,", 5));
+	yingbianma2.push_back(DuozijieBianMa("24", "and al,", 2));
+	yingbianma2.push_back(DuozijieBianMa("25", "and eax,", 5));
+	yingbianma2.push_back(DuozijieBianMa("2c", "sub al,", 2));
+	yingbianma2.push_back(DuozijieBianMa("2d", "sub eax,", 5));
+	yingbianma2.push_back(DuozijieBianMa("34", "xor al,", 2));
+	yingbianma2.push_back(DuozijieBianMa("35", "xor eax,", 5));
+	yingbianma2.push_back(DuozijieBianMa("3c", "cmp al,", 2));
+	yingbianma2.push_back(DuozijieBianMa("3d", "cmp eax,", 5));
 	return 0;
 }

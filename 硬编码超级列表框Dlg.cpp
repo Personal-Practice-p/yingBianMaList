@@ -370,6 +370,108 @@ int C硬编码超级列表框Dlg::初始化硬编码map()
 	yingbianma2.push_back(DuozijieBianMa("35", "xor eax,", 5));
 	yingbianma2.push_back(DuozijieBianMa("3c", "cmp al,", 2));
 	yingbianma2.push_back(DuozijieBianMa("3d", "cmp eax,", 5));
+
+	//第三天继续添加
+	//单字节
+	yingbianma.insert({ "60","pushad" });
+	yingbianma.insert({ "61","popad" });
+
+	yingbianma.insert({ "64","fs(前缀)" });
+	yingbianma.insert({ "65","gs(前缀)" });
+	yingbianma.insert({ "66","操作数大小(前缀)" });
+	yingbianma.insert({ "67","地址大小(前缀)" });
+
+	yingbianma.insert({ "6c","insb" });
+	yingbianma.insert({ "6d","insd" });
+	yingbianma.insert({ "6e","outsb" });
+	yingbianma.insert({ "6f","outsd" });
+
+	yingbianma.insert({ "98","cwde" });
+	yingbianma.insert({ "99","cdq" });
+	yingbianma.insert({ "9b","fwait" });
+
+	yingbianma.insert({ "9c","pushfd" });
+	yingbianma.insert({ "9d","popfd" });
+	yingbianma.insert({ "9e","sahf" });
+	yingbianma.insert({ "9f","lahf" });
+
+	yingbianma.insert({ "a4","movsb" });
+	yingbianma.insert({ "a5","movsd" });
+	yingbianma.insert({ "a6","cmpsb" });
+	yingbianma.insert({ "a7","cmpsd" });
+
+	yingbianma.insert({ "aa","stosb" });
+	yingbianma.insert({ "ab","stosd" });
+
+	yingbianma.insert({ "ac","lodsb" });
+	yingbianma.insert({ "ad","lodsd" });
+	yingbianma.insert({ "ae","scasb" });
+	yingbianma.insert({ "af","scasd" });
+
+	yingbianma.insert({ "c3","ret" });
+	yingbianma.insert({ "c9","leave" });
+
+	yingbianma.insert({ "cb","retf" });
+	yingbianma.insert({ "cc","int0x3" });
+	yingbianma.insert({ "ce","into" });
+	yingbianma.insert({ "cf","iretd" });
+
+	//多字节
+	yingbianma2.push_back(DuozijieBianMa("68", "push ", 5));
+	yingbianma2.push_back(DuozijieBianMa("6a", "push ", 2));
+
+	yingbianma2.push_back(DuozijieBianMa("70", "jo ", 2));
+	yingbianma2.push_back(DuozijieBianMa("71", "jno ", 2));
+	yingbianma2.push_back(DuozijieBianMa("72", "jb ", 2));
+	yingbianma2.push_back(DuozijieBianMa("73", "jnb ", 2));
+	yingbianma2.push_back(DuozijieBianMa("74", "je ", 2));
+	yingbianma2.push_back(DuozijieBianMa("75", "jnz ", 2));
+	yingbianma2.push_back(DuozijieBianMa("76", "jbe ", 2));
+	yingbianma2.push_back(DuozijieBianMa("77", "ja ", 2));
+	yingbianma2.push_back(DuozijieBianMa("78", "js ", 2));
+	yingbianma2.push_back(DuozijieBianMa("79", "jns ", 2));
+	yingbianma2.push_back(DuozijieBianMa("7a", "jpe ", 2));
+	yingbianma2.push_back(DuozijieBianMa("7b", "jpo ", 2));
+	yingbianma2.push_back(DuozijieBianMa("7c", "jl ", 2));
+	yingbianma2.push_back(DuozijieBianMa("7d", "jge ", 2));
+	yingbianma2.push_back(DuozijieBianMa("7e", "jle ", 2));
+	yingbianma2.push_back(DuozijieBianMa("7f", "jg ", 2));
+
+	//长跳
+	yingbianma2.push_back(DuozijieBianMa("0f80", "jo ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f81", "jno ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f82", "jb ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f83", "jnb ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f84", "je ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f85", "jnz ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f86", "jbe ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f87", "ja ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f88", "js ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f89", "jns ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8a", "jpe ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8b", "jpo ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8c", "jl ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8d", "jge ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8e", "jle ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8f", "jg ", 6));
+
+	
+	yingbianma2.push_back(DuozijieBianMa("9a", "call  ap", 7));
+
+	yingbianma2.push_back(DuozijieBianMa("a0", "mov al,", 5));
+	yingbianma2.push_back(DuozijieBianMa("a1", "mov eax,", 5));
+	//需要优化
+	yingbianma2.push_back(DuozijieBianMa("a3", "mov ob,al", 5));
+	yingbianma2.push_back(DuozijieBianMa("a4", "mov ov,eax", 5));
+
+	yingbianma2.push_back(DuozijieBianMa("a8", "test al,", 2));
+	yingbianma2.push_back(DuozijieBianMa("a9", "test eax,", 5));
+
+	yingbianma2.push_back(DuozijieBianMa("c2", "ret iw", 3));
+	yingbianma2.push_back(DuozijieBianMa("c8", "enter  iw ib", 4));
+
+	yingbianma2.push_back(DuozijieBianMa("ca", "retf  iw", 3));
+	yingbianma2.push_back(DuozijieBianMa("cd", "int ib", 2));
 	return 0;
 }
 
@@ -418,9 +520,6 @@ void C硬编码超级列表框Dlg::OnBnClickedButton2()
 			}
 		}
 	}
-	
-
-
 }
 
 

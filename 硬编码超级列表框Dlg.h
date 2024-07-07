@@ -40,6 +40,13 @@ public:
 	std::map<CString,CString>  yingbianma;
 	//多字节硬编码
 	std::vector<DuozijieBianMa> yingbianma2;
+	CString 当前答案;
+	int 分数;
 	int 地址;
 	int 初始化硬编码map();
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton1();
+//	CString 分数标签;
+	CStatic biaoqian;
+	CStatic biaoqian1;
 };

@@ -62,6 +62,8 @@ void C硬编码超级列表框Dlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, list1);
 	DDX_Control(pDX, IDC_EDIT1, edit1);
+	//  DDX_Control(pDX, IDC_FENSHU, 分数标签);
+	DDX_Control(pDX, IDC_FENSHU, biaoqian1);
 }
 
 BEGIN_MESSAGE_MAP(C硬编码超级列表框Dlg, CDialogEx)
@@ -70,6 +72,8 @@ BEGIN_MESSAGE_MAP(C硬编码超级列表框Dlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &C硬编码超级列表框Dlg::OnBnClickedOk)
 	ON_WM_CREATE()
+	ON_BN_CLICKED(IDC_BUTTON2, &C硬编码超级列表框Dlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON1, &C硬编码超级列表框Dlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -101,6 +105,9 @@ BOOL C硬编码超级列表框Dlg::OnInitDialog()
 
 	// 设置此对话框的图标。  当应用程序主窗口不是对话框时，框架将自动
 	//  执行此操作
+	当前答案 = "";
+	分数 = 0;
+	srand(time(0));
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
@@ -364,4 +371,80 @@ int C硬编码超级列表框Dlg::初始化硬编码map()
 	yingbianma2.push_back(DuozijieBianMa("3c", "cmp al,", 2));
 	yingbianma2.push_back(DuozijieBianMa("3d", "cmp eax,", 5));
 	return 0;
+}
+
+
+void C硬编码超级列表框Dlg::OnBnClickedButton2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	
+	
+	CButton* kaishi = (CButton*)GetDlgItem(IDC_BUTTON2);
+	kaishi->SetWindowText("下一题");
+	CEdit* edit1 = (CEdit*)GetDlgItem(IDC_EDIT2);
+	while (true)
+	{
+		int num = rand() % 255;
+		CString str;
+		str.Format("%02X", num);
+		for (auto it = yingbianma.begin(); it != yingbianma.end(); ++it) {
+			if (str == it->first)
+			{
+				
+				edit1->SetWindowText(str);
+				当前答案 = (*it).second;
+				return;
+			}
+		}
+		//判断多字节硬编码
+		for (auto it = yingbianma2.begin(); it != yingbianma2.end(); ++it) {
+			if ((*it).Hardcoding == str)
+			{
+				if ((*it).Byt == 2)
+				{
+					str = str + " 12";
+					edit1->SetWindowText(str);
+					当前答案 = (*it).Assembly + "12";
+					return;
+				}
+				else if((*it).Byt == 5)
+				{
+					str = str + " 78563412";
+					edit1->SetWindowText(str);
+					当前答案 = (*it).Assembly + "12345678";
+					return;
+				}
+				
+			}
+		}
+	}
+	
+
+
+}
+
+
+void C硬编码超级列表框Dlg::OnBnClickedButton1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CEdit* edit1 = (CEdit*)GetDlgItem(IDC_EDIT3);
+	CString str;
+	CString 分数str;
+	edit1->GetWindowTextA(str);
+	if (str==当前答案)
+	{
+		分数 += 10;
+		CEdit* edit1 = (CEdit*)GetDlgItem(IDC_EDIT3);
+		分数str.Format("%d", 分数);
+		分数str = "分数:" + 分数str;
+	
+		biaoqian1.SetWindowText(分数str);
+		edit1->SetWindowText("");
+		OnBnClickedButton2();
+
+	}
+	else
+	{
+		MessageBox("错误:正确答案为:" + 当前答案);
+	}
 }

@@ -344,7 +344,7 @@ int C硬编码超级列表框Dlg::初始化硬编码map()
 	yingbianma.insert({ "17","pop ss" });
 	yingbianma.insert({ "1e","push ds" });
 	yingbianma.insert({ "1f","pop ds" });
-	yingbianma.insert({ "26","ec(前缀)" });
+	yingbianma.insert({ "26","es(前缀)" });
 	yingbianma.insert({ "27","daa" });
 	yingbianma.insert({ "2e","cs(前缀)" });
 	yingbianma.insert({ "2f","das" });

@@ -36,9 +36,7 @@ public:
 	CEdit edit1;
 	afx_msg void OnBnClickedOk();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	//单字节硬编码
-	std::map<CString,CString>  yingbianma;
-	//多字节硬编码
+	//硬编码
 	std::vector<DuozijieBianMa> yingbianma2;
 	CString 当前答案;
 	int 分数;
@@ -49,4 +47,6 @@ public:
 //	CString 分数标签;
 	CStatic biaoqian;
 	CStatic biaoqian1;
+	afx_msg void OnEnChangeEdit3();
+	afx_msg void OnChangeEdit1();
 };

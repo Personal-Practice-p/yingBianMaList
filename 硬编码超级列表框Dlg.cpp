@@ -120,7 +120,7 @@ BOOL C硬编码超级列表框Dlg::OnInitDialog()
 	地址=0;
 	初始化硬编码map();
 	//将CListCtrl添加复选框check控件
-	list1.SetExtendedStyle(LVS_EX_CHECKBOXES | LVS_EX_GRIDLINES);
+	list1.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -229,6 +229,16 @@ void C硬编码超级列表框Dlg::OnBnClickedOk()
 					找到 = 1;
 					break;
 				}
+				else if ((*it).Byt = 2)
+				{
+					//2个长度的硬编码
+					list1.SetItemText(index, 1, (*it).Hardcoding + str.Mid(2, 2));
+					list1.SetItemText(index, 2, (*it).Assembly + "0x" + str.Mid(2, ((*it).Byt - 1) * 2));
+					地址 += (*it).Byt;
+					找到 = 1;
+					str = str.Mid((*it).Byt * 2);
+					break;
+				}
 				else if ((*it).Byt > 2)
 				{
 					//大于2个字节的硬编码,立即数要颠倒一下顺序
@@ -241,16 +251,11 @@ void C硬编码超级列表框Dlg::OnBnClickedOk()
 					str = str.Mid((*it).Byt * 2);
 					break;
 				}
-				else
+				else if ((*it).Byt > 0x10)
 				{
-					//2个长度的硬编码
-					list1.SetItemText(index, 1, (*it).Hardcoding + str.Mid(2, 2));
-					list1.SetItemText(index, 2, (*it).Assembly + "0x" + str.Mid(2, ((*it).Byt - 1) * 2));
-					地址 += (*it).Byt;
-					找到 = 1;
-					str = str.Mid((*it).Byt * 2);
-					break;
+					//变长编码处理
 				}
+				
 				
 			}
 		}
@@ -506,6 +511,35 @@ int C硬编码超级列表框Dlg::初始化硬编码map()
 	yingbianma2.push_back(DuozijieBianMa("e4", "in al,", 2));
 	yingbianma2.push_back(DuozijieBianMa("e5", "in eax,", 2));
 	yingbianma2.push_back(DuozijieBianMa("e6", "out ib,al", 2));
+	yingbianma2.push_back(DuozijieBianMa("e7", "out ib,eax", 2));
+	yingbianma2.push_back(DuozijieBianMa("e8", "call ", 5));
+	yingbianma2.push_back(DuozijieBianMa("e9", "jmp ", 5));
+	yingbianma2.push_back(DuozijieBianMa("ea", "jmp ", 7));
+	yingbianma2.push_back(DuozijieBianMa("eb", "jmp ", 2));
+	yingbianma2.push_back(DuozijieBianMa("ec", "in al,dx", 1));
+	yingbianma2.push_back(DuozijieBianMa("ed", "in eax,dx", 1));
+	yingbianma2.push_back(DuozijieBianMa("ee", "out dx,al", 1));
+	yingbianma2.push_back(DuozijieBianMa("ef", "out dx,eax", 1));
+	yingbianma2.push_back(DuozijieBianMa("f0", "lock", 1));
+	yingbianma2.push_back(DuozijieBianMa("f2", "repnz", 1));
+	yingbianma2.push_back(DuozijieBianMa("f3", "repe", 1));
+	yingbianma2.push_back(DuozijieBianMa("f4", "hlt", 1));
+	yingbianma2.push_back(DuozijieBianMa("f5", "cmc", 1));
+	yingbianma2.push_back(DuozijieBianMa("f8", "clc", 1));
+	yingbianma2.push_back(DuozijieBianMa("f9", "stc", 1));
+	yingbianma2.push_back(DuozijieBianMa("fa", "cli", 1));
+	yingbianma2.push_back(DuozijieBianMa("fb", "sti", 1));
+	yingbianma2.push_back(DuozijieBianMa("fc", "cld", 1));
+	yingbianma2.push_back(DuozijieBianMa("fd", "std", 1));
+
+
+
+	//变长编码
+	yingbianma2.push_back(DuozijieBianMa("88", "mov eb,gb", 0x11));
+	yingbianma2.push_back(DuozijieBianMa("89", "mov ev,gv", 0x11));
+	yingbianma2.push_back(DuozijieBianMa("8a", "mov gb,eb", 0x11));
+	yingbianma2.push_back(DuozijieBianMa("8b", "mov gv,ev", 0x11));
+
 
 	return 0;
 }

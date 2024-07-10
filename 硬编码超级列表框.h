@@ -30,3 +30,5 @@ public:
 };
 
 extern C硬编码超级列表框App theApp;
+//删除空字符串
+void RemoveSpaces(CString& str);

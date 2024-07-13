@@ -214,7 +214,7 @@ void C硬编码超级列表框Dlg::OnBnClickedOk()
 				//str地址.Format("%08X", 地址);
 				
 				//判断代码长度是否正确
-				if ((*it).Byt > str.GetLength() / 2)
+				if ((*it).Byt > str.GetLength() / 2 && (*it).Byt!=0x11)
 				{
 					MessageBox("错误:字节长度不正确!");
 					return;
@@ -229,7 +229,7 @@ void C硬编码超级列表框Dlg::OnBnClickedOk()
 					找到 = 1;
 					break;
 				}
-				else if ((*it).Byt = 2)
+				else if ((*it).Byt == 2)
 				{
 					//2个长度的硬编码
 					list1.SetItemText(index, 1, (*it).Hardcoding + str.Mid(2, 2));
@@ -239,21 +239,57 @@ void C硬编码超级列表框Dlg::OnBnClickedOk()
 					str = str.Mid((*it).Byt * 2);
 					break;
 				}
-				else if ((*it).Byt > 2)
+				else if ((*it).Byt == 5)
 				{
 					//大于2个字节的硬编码,立即数要颠倒一下顺序
 					CString 立即数;
 					list1.SetItemText(index, 1, (*it).Hardcoding + str.Mid(2, 8));
 					立即数 = str.Mid(8, 2) + str.Mid(6, 2) + str.Mid(4, 2) + str.Mid(2, 2);
+
 					list1.SetItemText(index, 2, (*it).Assembly + "0x" + 立即数);
 					地址 += (*it).Byt;
 					找到 = 1;
 					str = str.Mid((*it).Byt * 2);
 					break;
 				}
-				else if ((*it).Byt > 0x10)
+				else if ((*it).Byt == 0x11)
 				{
+					找到 = 1;
 					//变长编码处理
+					CString modrm;
+					CString sib;
+					int lenth;
+					modrm = str.Mid(2, 2);
+					sib = str.Mid(4, 2);
+					//TRACE(modrm);
+					
+					if (::判断modrm是否有sib(modrm))
+					{
+						//有sib
+						//计算长度
+						lenth = ::有sib计算长度(modrm, sib);
+					}
+					else//无sib
+					{
+						//计算长度
+						lenth=::无sib计算长度(modrm);
+					}
+					//知道长度,取出编码,转换成反汇编
+					//判断一下长度是否正确
+					if (str.GetLength()< lenth*2)
+					{
+						MessageBox("错误:变长编码字节长度不正确!"); 
+						return;
+					}
+
+					可变长度编码转汇编(str.Mid(0,lenth*2),it->Assembly);
+					str = str.Mid(0, lenth);
+
+
+
+					break;
+					
+
 				}
 				
 				
@@ -341,24 +377,24 @@ int C硬编码超级列表框Dlg::初始化硬编码map()
 
 	//多字节硬编码
 	//b0 - b7  mov al-bh  占2字节
-	yingbianma2.push_back(DuozijieBianMa("b0","mov al,",2));
-	yingbianma2.push_back(DuozijieBianMa("b1", "mov cl,",2));
-	yingbianma2.push_back(DuozijieBianMa("b2", "mov dl,", 2));
-	yingbianma2.push_back(DuozijieBianMa("b3", "mov bl,", 2));
-	yingbianma2.push_back(DuozijieBianMa("b4", "mov ah,", 2));
-	yingbianma2.push_back(DuozijieBianMa("b5", "mov ch,", 2));
-	yingbianma2.push_back(DuozijieBianMa("b6", "mov dh,", 2));
-	yingbianma2.push_back(DuozijieBianMa("b7", "mov bh,", 2));
+	yingbianma2.push_back(DuozijieBianMa("b0","mov al,ib",2));
+	yingbianma2.push_back(DuozijieBianMa("b1", "mov cl,ib",2));
+	yingbianma2.push_back(DuozijieBianMa("b2", "mov dl,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("b3", "mov bl,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("b4", "mov ah,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("b5", "mov ch,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("b6", "mov dh,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("b7", "mov bh,ib", 2));
 
 	//b8 - bf mov eax-edi 占5个字节
-	yingbianma2.push_back(DuozijieBianMa("b8", "mov eax,", 5));
-	yingbianma2.push_back(DuozijieBianMa("b9", "mov ecx,", 5));
-	yingbianma2.push_back(DuozijieBianMa("ba", "mov edx,", 5));
-	yingbianma2.push_back(DuozijieBianMa("bb", "mov ebx,", 5));
-	yingbianma2.push_back(DuozijieBianMa("bc", "mov esp,", 5));
-	yingbianma2.push_back(DuozijieBianMa("bd", "mov ebp,", 5));
-	yingbianma2.push_back(DuozijieBianMa("be", "mov esi,", 5));
-	yingbianma2.push_back(DuozijieBianMa("bf", "mov edi,", 5));
+	yingbianma2.push_back(DuozijieBianMa("b8", "mov eax,iv", 5));
+	yingbianma2.push_back(DuozijieBianMa("b9", "mov ecx,iv", 5));
+	yingbianma2.push_back(DuozijieBianMa("ba", "mov edx,iv", 5));
+	yingbianma2.push_back(DuozijieBianMa("bb", "mov ebx,iv", 5));
+	yingbianma2.push_back(DuozijieBianMa("bc", "mov esp,iv", 5));
+	yingbianma2.push_back(DuozijieBianMa("bd", "mov ebp,iv", 5));
+	yingbianma2.push_back(DuozijieBianMa("be", "mov esi,iv", 5));
+	yingbianma2.push_back(DuozijieBianMa("bf", "mov edi,iv", 5));
 
 	//第二天
 	//单字节
@@ -380,22 +416,22 @@ int C硬编码超级列表框Dlg::初始化硬编码map()
 	yingbianma2.push_back({ "3f","aas",1 });
 
 	//多字节
-	yingbianma2.push_back(DuozijieBianMa("04", "add al,", 2));
-	yingbianma2.push_back(DuozijieBianMa("05", "add eax,", 5));
-	yingbianma2.push_back(DuozijieBianMa("0c", "or al,", 2));
-	yingbianma2.push_back(DuozijieBianMa("0d", "or eax,", 5));
-	yingbianma2.push_back(DuozijieBianMa("14", "adc al,", 2));
-	yingbianma2.push_back(DuozijieBianMa("15", "adc eax,", 5));
-	yingbianma2.push_back(DuozijieBianMa("1c", "sbb al,", 2));
-	yingbianma2.push_back(DuozijieBianMa("1d", "sbb eax,", 5));
-	yingbianma2.push_back(DuozijieBianMa("24", "and al,", 2));
-	yingbianma2.push_back(DuozijieBianMa("25", "and eax,", 5));
-	yingbianma2.push_back(DuozijieBianMa("2c", "sub al,", 2));
-	yingbianma2.push_back(DuozijieBianMa("2d", "sub eax,", 5));
-	yingbianma2.push_back(DuozijieBianMa("34", "xor al,", 2));
-	yingbianma2.push_back(DuozijieBianMa("35", "xor eax,", 5));
-	yingbianma2.push_back(DuozijieBianMa("3c", "cmp al,", 2));
-	yingbianma2.push_back(DuozijieBianMa("3d", "cmp eax,", 5));
+	yingbianma2.push_back(DuozijieBianMa("04", "add al,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("05", "add eax,iz", 5));
+	yingbianma2.push_back(DuozijieBianMa("0c", "or al,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("0d", "or eax,iz", 5));
+	yingbianma2.push_back(DuozijieBianMa("14", "adc al,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("15", "adc eax,iz", 5));
+	yingbianma2.push_back(DuozijieBianMa("1c", "sbb al,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("1d", "sbb eax,iz", 5));
+	yingbianma2.push_back(DuozijieBianMa("24", "and al,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("25", "and eax,iz", 5));
+	yingbianma2.push_back(DuozijieBianMa("2c", "sub al,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("2d", "sub eax,iz", 5));
+	yingbianma2.push_back(DuozijieBianMa("34", "xor al,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("35", "xor eax,iz", 5));
+	yingbianma2.push_back(DuozijieBianMa("3c", "cmp al,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("3d", "cmp eax,iz", 5));
 
 	//第三天继续添加
 	//单字节
@@ -443,79 +479,79 @@ int C硬编码超级列表框Dlg::初始化硬编码map()
 	yingbianma2.push_back({ "cf","iretd" ,1 });
 
 	//多字节
-	yingbianma2.push_back(DuozijieBianMa("68", "push ", 5));
-	yingbianma2.push_back(DuozijieBianMa("6a", "push ", 2));
+	yingbianma2.push_back(DuozijieBianMa("68", "push iz", 5));
+	yingbianma2.push_back(DuozijieBianMa("6a", "push ib", 2));
 
-	yingbianma2.push_back(DuozijieBianMa("70", "jo ", 2));
-	yingbianma2.push_back(DuozijieBianMa("71", "jno ", 2));
-	yingbianma2.push_back(DuozijieBianMa("72", "jb ", 2));
-	yingbianma2.push_back(DuozijieBianMa("73", "jnb ", 2));
-	yingbianma2.push_back(DuozijieBianMa("74", "je ", 2));
-	yingbianma2.push_back(DuozijieBianMa("75", "jnz ", 2));
-	yingbianma2.push_back(DuozijieBianMa("76", "jbe ", 2));
-	yingbianma2.push_back(DuozijieBianMa("77", "ja ", 2));
-	yingbianma2.push_back(DuozijieBianMa("78", "js ", 2));
-	yingbianma2.push_back(DuozijieBianMa("79", "jns ", 2));
-	yingbianma2.push_back(DuozijieBianMa("7a", "jpe ", 2));
-	yingbianma2.push_back(DuozijieBianMa("7b", "jpo ", 2));
-	yingbianma2.push_back(DuozijieBianMa("7c", "jl ", 2));
-	yingbianma2.push_back(DuozijieBianMa("7d", "jge ", 2));
-	yingbianma2.push_back(DuozijieBianMa("7e", "jle ", 2));
-	yingbianma2.push_back(DuozijieBianMa("7f", "jg ", 2));
+	yingbianma2.push_back(DuozijieBianMa("70", "jo ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("71", "jno ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("72", "jb ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("73", "jnb ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("74", "je ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("75", "jnz ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("76", "jbe ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("77", "ja ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("78", "js ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("79", "jns ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("7a", "jpe ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("7b", "jpo ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("7c", "jl ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("7d", "jge ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("7e", "jle ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("7f", "jg ib", 2));
 
 	//长跳
-	yingbianma2.push_back(DuozijieBianMa("0f80", "jo ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f81", "jno ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f82", "jb ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f83", "jnb ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f84", "je ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f85", "jnz ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f86", "jbe ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f87", "ja ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f88", "js ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f89", "jns ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f8a", "jpe ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f8b", "jpo ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f8c", "jl ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f8d", "jge ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f8e", "jle ", 6));
-	yingbianma2.push_back(DuozijieBianMa("0f8f", "jg ", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f80", "jo iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f81", "jno iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f82", "jb iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f83", "jnb iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f84", "je iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f85", "jnz iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f86", "jbe iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f87", "ja iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f88", "js iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f89", "jns iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8a", "jpe iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8b", "jpo iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8c", "jl iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8d", "jge iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8e", "jle iz", 6));
+	yingbianma2.push_back(DuozijieBianMa("0f8f", "jg iz", 6));
 
 	
 	yingbianma2.push_back(DuozijieBianMa("9a", "call  ap", 7));
 
-	yingbianma2.push_back(DuozijieBianMa("a0", "mov al,", 5));
-	yingbianma2.push_back(DuozijieBianMa("a1", "mov eax,", 5));
+	yingbianma2.push_back(DuozijieBianMa("a0", "mov al,ob", 5));
+	yingbianma2.push_back(DuozijieBianMa("a1", "mov eax,ov", 5));
 	//需要优化
 	yingbianma2.push_back(DuozijieBianMa("a3", "mov ob,al", 5));
 	yingbianma2.push_back(DuozijieBianMa("a4", "mov ov,eax", 5));
 
-	yingbianma2.push_back(DuozijieBianMa("a8", "test al,", 2));
-	yingbianma2.push_back(DuozijieBianMa("a9", "test eax,", 5));
+	yingbianma2.push_back(DuozijieBianMa("a8", "test al,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("a9", "test eax,iz", 5));
 
 	yingbianma2.push_back(DuozijieBianMa("c2", "ret iw", 3));
-	yingbianma2.push_back(DuozijieBianMa("c8", "enter  iw ib", 4));
+	yingbianma2.push_back(DuozijieBianMa("c8", "enter iw ib", 4));
 
 	yingbianma2.push_back(DuozijieBianMa("ca", "retf  iw", 3));
 	yingbianma2.push_back(DuozijieBianMa("cd", "int ib", 2));
 
 
 	//第四天学的硬编码
-	yingbianma2.push_back(DuozijieBianMa("d4", "aam ", 2));
-	yingbianma2.push_back(DuozijieBianMa("d5", "aad ", 2));
+	yingbianma2.push_back(DuozijieBianMa("d4", "aam ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("d5", "aad ib", 2));
 
-	yingbianma2.push_back(DuozijieBianMa("e0", "loopnz ", 2));
-	yingbianma2.push_back(DuozijieBianMa("e1", "loopz ", 2));
-	yingbianma2.push_back(DuozijieBianMa("e2", "loop ", 2));
-	yingbianma2.push_back(DuozijieBianMa("e3", "jrcxz ", 2));
-	yingbianma2.push_back(DuozijieBianMa("e4", "in al,", 2));
-	yingbianma2.push_back(DuozijieBianMa("e5", "in eax,", 2));
+	yingbianma2.push_back(DuozijieBianMa("e0", "loopnz Jb", 2));
+	yingbianma2.push_back(DuozijieBianMa("e1", "loopz Jb", 2));
+	yingbianma2.push_back(DuozijieBianMa("e2", "loop Jb", 2));
+	yingbianma2.push_back(DuozijieBianMa("e3", "jrcxz Jb", 2));
+	yingbianma2.push_back(DuozijieBianMa("e4", "in al,ib", 2));
+	yingbianma2.push_back(DuozijieBianMa("e5", "in eax,ib", 2));
 	yingbianma2.push_back(DuozijieBianMa("e6", "out ib,al", 2));
 	yingbianma2.push_back(DuozijieBianMa("e7", "out ib,eax", 2));
-	yingbianma2.push_back(DuozijieBianMa("e8", "call ", 5));
-	yingbianma2.push_back(DuozijieBianMa("e9", "jmp ", 5));
-	yingbianma2.push_back(DuozijieBianMa("ea", "jmp ", 7));
-	yingbianma2.push_back(DuozijieBianMa("eb", "jmp ", 2));
+	yingbianma2.push_back(DuozijieBianMa("e8", "call jz", 5));
+	yingbianma2.push_back(DuozijieBianMa("e9", "jmp jz", 5));
+	yingbianma2.push_back(DuozijieBianMa("ea", "jmp ap", 7));
+	yingbianma2.push_back(DuozijieBianMa("eb", "jmp Jb", 2));
 	yingbianma2.push_back(DuozijieBianMa("ec", "in al,dx", 1));
 	yingbianma2.push_back(DuozijieBianMa("ed", "in eax,dx", 1));
 	yingbianma2.push_back(DuozijieBianMa("ee", "out dx,al", 1));
@@ -539,6 +575,7 @@ int C硬编码超级列表框Dlg::初始化硬编码map()
 	yingbianma2.push_back(DuozijieBianMa("89", "mov ev,gv", 0x11));
 	yingbianma2.push_back(DuozijieBianMa("8a", "mov gb,eb", 0x11));
 	yingbianma2.push_back(DuozijieBianMa("8b", "mov gv,ev", 0x11));
+
 
 
 	return 0;
@@ -658,4 +695,208 @@ void C硬编码超级列表框Dlg::OnChangeEdit1()
 	////edit1.SetWindowText(str编辑框1内容);
 
 	////MessageBox("请输入硬编码");
+}
+bool 判断modrm是否有sib(CString strmodrm)
+{
+	//long decValue = _tcstol(hexStr, NULL, 16);
+	int imodrm = _tcstol(strmodrm,NULL,16);
+	//if (((imodrm >> 6) & 3 )== 3)//判断是00 01 10 还是11  11直接返回没有sib
+	//{
+	//	return false;
+	//}
+	if ((imodrm  & 0xe0) !=0xe0)//判断是00 01 10 并且后三位是100
+	{
+		if ((imodrm  & 0x07) == 0x4)
+		{
+			return true;
+		}
+	}
+		
+	return false;
+}
+
+int 无sib计算长度(CString strmodrm)
+{
+	int imodrm = _tcstol(strmodrm, NULL, 16);
+	if ((imodrm & 0xe0)==0x40)//mod=01
+	{
+		return 3;
+	}
+	if ((imodrm & 0xe0) == 0x80)//mod=10
+	{
+		return 6;
+	}
+	if ((imodrm & 0xe0) == 0x00 && (imodrm & 0x07) == 0x05)//mod=00   rm=dis32
+	{
+		return 6;
+	}
+	return 2;
+}
+
+int 有sib计算长度(CString strmodrm,CString strSib)
+{
+	int imodrm = _tcstol(strmodrm, NULL, 16);
+	int iSib = _tcstol(strSib, NULL, 16);
+	if ((imodrm & 0xe0) == 0x40)//mod=01
+	{
+		return 4;
+	}
+	if ((imodrm & 0xe0) == 0x80)//mod=10
+	{
+		return 7;
+	}
+
+	if ((imodrm & 0xe0) == 0x00 && (iSib & 0x07) == 0x05)//mod==00 当 rm == 100 base == 101(EBP)--->直接把  BASE  变成 dis32
+	{
+		return 7;
+	}
+	return 3;
+}
+CString 可变长度编码转汇编(CString str,CString Assembly)
+{
+	CString stropcode = str.Mid(0, 2);
+	CString strmodrm = str.Mid(2, 2);
+	CString strSib="";
+	CString strImm;
+	int imodrm = _tcstol(strmodrm, NULL, 16);
+	CString strReg;
+	CString strRm;
+	//reg是固定的
+	//iReg = imodrm >> 3 & 0x7;
+	strReg = 计算reg(Assembly, strmodrm);
+	if (((imodrm >> 6) & 3) == 3)//rm为r
+	{
+		strRm=无sib计算Rm(stropcode);
+	}
+
+	if (判断modrm是否有sib(strmodrm))
+	{
+		//有sib
+		strSib= str.Mid(4, 2);
+		strImm = str.Mid(6);
+
+	}
+	else
+	{
+		//没有sib
+		strImm = str.Mid(4);
+		
+		
+	}
+	
+		
+	return NULL;
+}
+CString 无sib计算Rm(CString strmodrm)
+{
+	int imodrm = _tcstol(strmodrm, NULL, 16);
+	int iRm;
+	iRm = imodrm & 0x7;
+
+	if (((imodrm >> 6) & 3) == 3)//rm为r
+	{
+		switch (iRm)
+		{
+		case 0:
+			return "al";
+		case 1:
+			return "cl";
+		case 2:
+			return "dl";
+		case 3:
+			return "bl";
+		case 4:
+			return "ah";
+		case 5:
+			return "ch";
+		case 6:
+			return "dh";
+		case 7:
+			return "bh";
+		default:
+			break;
+		}
+	}
+	else //rm为m [] 只有eax-edi
+	{
+		switch (iRm)
+		{
+		case 0:
+			return "eax";
+		case 1:
+			return "ecx";
+		case 2:
+			return "edx";
+		case 3:
+			return "ebx";
+		case 4:
+			return "esp";
+		case 5:
+			return "ebp";
+		case 6:
+			return "esi";
+		case 7:
+			return "edi";
+		default:
+			break;
+		}
+	}
+	
+
+}
+CString 计算reg(CString Assembly, CString strmodrm)
+{
+	int imodrm = _tcstol(strmodrm, NULL, 16);
+	int iReg;
+	iReg = imodrm >> 3 & 0x7;
+	if (Assembly.Find("gb") != -1)
+	{
+		switch (iReg)
+		{
+		case 0:
+			return "al";
+		case 1:
+			return "cl";
+		case 2:
+			return "dl";
+		case 3:
+			return "bl";
+		case 4:
+			return "ah";
+		case 5:
+			return "ch";
+		case 6:
+			return "dh";
+		case 7:
+			return "bh";
+		default:
+			break;
+		}
+
+	}
+	else if(Assembly.Find("gv") != -1)
+	{
+		switch (iReg)
+		{
+		case 0:
+			return "eax";
+		case 1:
+			return "ecx";
+		case 2:
+			return "edx";
+		case 3:
+			return "ebx";
+		case 4:
+			return "esp";
+		case 5:
+			return "ebp";
+		case 6:
+			return "esi";
+		case 7:
+			return "edi";
+		default:
+			break;
+		}
+	}
+	return NULL;
 }

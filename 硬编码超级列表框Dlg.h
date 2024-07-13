@@ -50,3 +50,8 @@ public:
 	afx_msg void OnEnChangeEdit3();
 	afx_msg void OnChangeEdit1();
 };
+bool 判断modrm是否有sib(CString modrm);
+int 无sib计算长度(CString opmod);
+int 有sib计算长度(CString strmodrm, CString strSib);
+CString 可变长度编码转汇编(CString str, CString Assembly);
+CString 计算reg(CString Assembly, CString strmodrm);

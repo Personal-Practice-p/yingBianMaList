@@ -55,3 +55,6 @@ int 无sib计算长度(CString opmod);
 int 有sib计算长度(CString strmodrm, CString strSib);
 CString 可变长度编码转汇编(CString str, CString Assembly);
 CString 计算reg(CString Assembly, CString strmodrm);
+CString 无sib计算Rm(CString strmodrm, const CString& Assembly);
+//第二次写
+int 处理变长编码(CString& str, CString& strassembly, const CString& Assembly);

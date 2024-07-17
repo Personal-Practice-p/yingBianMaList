@@ -253,8 +253,8 @@ void C硬编码超级列表框Dlg::OnBnClickedOk()
 					str = str.Mid((*it).Byt * 2);
 					break;
 				}
-				else if ((*it).Byt == 0x11)
-				{
+				//else if ((*it).Byt == 0x11)
+				//{
 					//找到 = 1;
 					////变长编码处理
 					//CString modrm;
@@ -285,17 +285,29 @@ void C硬编码超级列表框Dlg::OnBnClickedOk()
 
 					//可变长度编码转汇编(str.Mid(0,lenth*2),it->Assembly);
 					//str = str.Mid(lenth*2);
-					CString strassembly;//返回反汇编
-					地址 += 处理变长编码(str, strassembly, it->Assembly);//返回指令长度 和反汇编代码
-
-					break;
+					//CString strassembly;//返回反汇编
+					//地址 += 处理变长编码(str, strassembly, it->Assembly);//返回指令长度 和反汇编代码
+					
+					//寻找
+					
+				//	break;
 					
 
-				}
+				//}
 				
 				
 			}
 		}
+		int index1 = VLE::findOpcode(str);
+		if (index1 != -1)
+		{
+			//找到
+			MessageBox(std::to_string(index1).c_str());
+			找到 = 1;
+			return;
+
+		}
+
 		if (找到 == 0)
 		{
 			MessageBox("错误:没有找到的编码!"+ str.Mid(0,2));

@@ -183,6 +183,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="config.h" />
     <ClInclude Include="DuozijieBianMa.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />

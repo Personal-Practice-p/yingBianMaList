@@ -1,43 +1,50 @@
 #pragma once
-
-
-struct bianChangType
+#include "config.h"
+enum 段前缀enum
 {
-	CString opcode;
-	CString ass;
-	CString operand1;
-	CString operand2;
-	CString operand3;//这个大部分为NULL
+	es,
+	cs,
+	ss,
+	ds,
+	fs,
+	gs
 };
-const bianChangType bianchang[] =
+enum repType
 {
-	{"00","add","Eb","Gb",NULL},
-	{"01","add","Eb","Gv",NULL},
-	{"02","add","Gb","Eb",NULL},
-	{"03","add","Gv","Ev",NULL},
-
-	{"08","or","Eb","Gb",NULL},
-	{"09","or","Eb","Gv",NULL},
-	{"0a","or","Gb","Eb",NULL},
-	{"0b","or","Gv","Ev",NULL},
-
-	{"10","adc","Eb","Gb",NULL},
-	{"11","adc","Eb","Gv",NULL},
-	{"12","adc","Gb","Eb",NULL},
-	{"13","adc","Gv","Ev",NULL},
-
-	{"18","sbb","Eb","Gb",NULL},
-	{"19","sbb","Eb","Gv",NULL},
-	{"1a","sbb","Gb","Eb",NULL},
-	{"1b","sbb","Gv","Ev",NULL},
-
-	{"20","and","Eb","Gb",NULL},
-	{"21","and","Eb","Gv",NULL},
-	{"22","and","Gb","Eb",NULL},
-	{"23","and","Gv","Ev",NULL}
+	rep_none,
+	rep,
+	repne
 };
+struct 指令解码type
+{
+	段前缀enum 段前缀;
+	bool Operand_Size;
+	bool Address_Size;
+	repType rep;
+	uint8_t opcode;
+	std::string mnemonic;           // 助记符
+	mnemonicType operand1;           // 操作数1类型
+	mnemonicType operand2;           // 操作数2类型
+	mnemonicType operand3;           // 操作数3类型
+
+	uint8_t modrm;
+	uint8_t sib;
+	uint8_t mod;
+	uint8_t reg;
+	uint8_t rm;
+	uint8_t scale;
+	uint8_t index;
+	uint8_t base;
+
+	std::string stroperand1;           // 操作数1值
+	std::string stroperand2;           // 操作数2值
+	std::string stroperand3;           // 操作数3值
+	int length;
+};
+
 class VLE
 {
 public:
 	static int findOpcode(const CString & str);//传入整个str,,返回找到的索引,找不到返回-1
 };
+

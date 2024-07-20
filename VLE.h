@@ -14,5 +14,6 @@ public:
 
 	//处理前缀
 	void VLE::Handling_prefix(指令解码type& new指令, int refix);
+	void VLE::Handle_Opcode(指令解码type& new指令, int index);
 };
 

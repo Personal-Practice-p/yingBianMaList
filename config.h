@@ -120,9 +120,9 @@ struct 指令解码type
 	bool Address_Size = false;
 	repType rep=rep_none;
 	bool lock=false;
-	uint8_t opcode=0;
+	unsigned int opcode=0;
 	CString mnemonic;           // 助记符
-	mnemonicType operand1=none;           // 操作数1类型
+	mnemonicType operand1 = none;           // 操作数1类型
 	mnemonicType operand2 = none;           // 操作数2类型
 	mnemonicType operand3 = none;           // 操作数3类型
 
@@ -136,9 +136,9 @@ struct 指令解码type
 	uint8_t base=0;
 
 	//这个应该是计算过后的
-	std::string stroperand1;           // 操作数1值
-	std::string stroperand2;           // 操作数2值
-	std::string stroperand3;           // 操作数3值
+	CString stroperand1;           // 操作数1值
+	CString stroperand2;           // 操作数2值
+	CString stroperand3;           // 操作数3值
 	int length=0;
 	CString assembly;//处理好的整条反汇编指令
 	CString allCode;//这条指令的所有硬编码

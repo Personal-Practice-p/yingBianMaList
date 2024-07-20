@@ -53,11 +53,28 @@ int VLE::readOpcode(CString& str)//传入整个str
 		{
 			//找到
 			TRACE("opcode:"+ strCode + v指令集[i].mnemonic +"\n");
+			Handle_Opcode(new指令, i);
+			new指令.allCode = new指令.allCode + strCode;
+			deleteStr(str, 1);
 		}
 	}
+	//处理modrm
+	new指令.operand1 == 
 	
 
 	return 0;
+}
+
+void VLE::Handle_Opcode(指令解码type& new指令, int index)
+{
+	new指令.opcode = v指令集[index].opcode;
+	new指令.mnemonic = v指令集[index].mnemonic;
+
+	new指令.operand1 = v指令集[index].operand1;
+	new指令.operand2 = v指令集[index].operand2;
+	new指令.operand3 = v指令集[index].operand3;
+	
+
 }
 
 bool VLE::deleteStr(CString& str, int num)//num是字节数

@@ -179,8 +179,16 @@ HCURSOR C硬编码超级列表框Dlg::OnQueryDragIcon()
 
 void C硬编码超级列表框Dlg::OnBnClickedOk()
 {
-	// TODO: 在此添加控件通知处理程序代码
+	//新代码
 	CString str;
+	edit1.GetWindowText(str);
+	CString str2;
+	str2 = str;
+	VLE vle;
+	vle.readOpcode(str2);
+
+	// TODO: 在此添加控件通知处理程序代码
+	
 	CString str剩余代码;
 	int 找到 = 0;
 	int i剩余下标 = 0;

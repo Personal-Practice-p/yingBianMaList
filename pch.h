@@ -13,5 +13,5 @@
 #include <vector>
 #include<string>
 #include"DuozijieBianMa.h"
-#include"VLE.h"
+
 #endif //PCH_H

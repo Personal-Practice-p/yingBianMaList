@@ -1,6 +1,8 @@
 ﻿
 // 硬编码超级列表框Dlg.h: 头文件
 //
+#include"VLE.h"
+
 
 #pragma once
 

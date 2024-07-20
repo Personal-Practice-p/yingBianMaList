@@ -1,5 +1,6 @@
 #pragma once
 #include<unordered_map>
+#include <vector>
 #include<string>
 struct modrm
 {
@@ -25,8 +26,40 @@ enum mnemonicType
 	Gb,
 	Ev,
 	Gv,
-	eax,
-	ecx
+	ad,
+
+	jb,//和ib同一种操作,先写开,方便以后处理
+	jz,//和iz同一种操作,先写开,方便以后处理
+
+	yb,
+	yz,
+	xb,
+	xz,
+
+	eax=0x10,
+	ecx,
+	edx,
+	ebx,
+	esp,
+	ebp,
+	esi,
+	edi,
+	al=0x20,//取右边知道寄存器的编号,取左边知道寄存器的类型
+	cl,
+	dl,
+	bl,
+	ah,
+	ch,
+	dh,
+	bh,
+	ax=30,
+	cx,
+	dx,
+	bx,
+	sp,
+	bp,
+	si,
+	di
 };
 struct InstructionDescriptor
 {
@@ -37,15 +70,180 @@ struct InstructionDescriptor
 	mnemonicType operand3;           // 操作数3类型
 };
 
-
+struct prefixtype
+{
+	uint8_t opcode;
+	std::string mnemonic;
+};
 
 InstructionDescriptor v指令集[] =
 {
 	{0x40,"inc",eax,none,none},
 	{0x41,"inc",ecx,none,none},
+	{0x42,"inc",edx,none,none},
+	{0x43,"inc",ebx,none,none},
+	{0x44,"inc",esp,none,none},
+	{0x45,"inc",ebp,none,none},
+	{0x46,"inc",esi,none,none},
+	{0x47,"inc",edi,none,none},
+
+	{0x48,"dec",eax,none,none},
+	{0x49,"dec",ecx,none,none},
+	{0x4a,"dec",edx,none,none},
+	{0x4b,"dec",ebx,none,none},
+	{0x4c,"dec",esp,none,none},
+	{0x4d,"dec",ebp,none,none},
+	{0x4e,"dec",esi,none,none},
+	{0x4f,"dec",edi,none,none},
+
+	{0x50,"push",eax,none,none},
+	{0x51,"push",ecx,none,none},
+	{0x52,"push",edx,none,none},
+	{0x53,"push",ebx,none,none},
+	{0x54,"push",esp,none,none},
+	{0x55,"push",ebp,none,none},
+	{0x56,"push",esi,none,none},
+	{0x57,"push",edi,none,none},
+
+	{0x58,"pop",eax,none,none},
+	{0x59,"pop",ecx,none,none},
+	{0x5a,"pop",edx,none,none},
+	{0x5b,"pop",ebx,none,none},
+	{0x5c,"pop",esp,none,none},
+	{0x5d,"pop",ebp,none,none},
+	{0x5e,"pop",esi,none,none},
+	{0x5f,"pop",edi,none,none},
+
+	{0xb0,"mov",al,Ib,none},
+	{0xb1,"mov",cl,Ib,none},
+	{0xb2,"mov",dl,Ib,none},
+	{0xb3,"mov",bl,Ib,none},
+	{0xb4,"mov",ah,Ib,none},
+	{0xb5,"mov",ch,Ib,none},
+	{0xb6,"mov",dh,Ib,none},
+	{0xb7,"mov",bh,Ib,none},
+
+	{0xb8,"mov",eax,Iv,none},
+	{0xb9,"mov",ecx,Iv,none},
+	{0xba,"mov",edx,Iv,none},
+	{0xbb,"mov",ebx,Iv,none},
+	{0xbc,"mov",esp,Iv,none},
+	{0xbd,"mov",ebp,Iv,none},
+	{0xbe,"mov",esi,Iv,none},
+	{0xbf,"mov",edi,Iv,none},
+
 
 	{0x90,"nop",none,none,none},
+	{0x91,"xchg",eax,ecx,none},
+	{0x92,"xchg",eax,edx,none},
+	{0x93,"xchg",eax,ebx,none},
+	{0x94,"xchg",eax,esp,none},
+	{0x95,"xchg",eax,ebp,none},
+	{0x96,"xchg",eax,esi,none},
+	{0x97,"xchg",eax,edi,none},
+
+	{0x04,"add",al,Ib,none},
+	{0x05,"add",eax,Iz,none},
+	{0x06,"push es",none,none,none},//不受前缀影响
+	{0x07,"pop es",none,none,none},//不受前缀影响
+	
+	{0x0c,"or",al,Ib,none},
+	{0x0d,"or",eax,Iz,none},
+	{0x0e,"push cs",none,none,none},//不受前缀影响
+	{0x0f,"两个字节编码表",none,none,none},
+
+	{0x14,"adc",al,Ib,none},
+	{0x15,"adc",eax,Iz,none},
+	{0x16,"push ss",none,none,none},//不受前缀影响
+	{0x17,"pop ss",none,none,none},//不受前缀影响
+
+	{0x1c,"sbb",al,Ib,none},
+	{0x1d,"sbb",eax,Iz,none},
+	{0x1e,"push ds",none,none,none},//不受前缀影响
+	{0x1f,"pop ds",none,none,none},//不受前缀影响
+
+	{0x24,"and",al,Ib,none},
+	{0x25,"and",eax,Iz,none},
+	{0x27,"daa",none,none,none},
+
+	{0x2c,"sub",al,Ib,none},
+	{0x2d,"sub",eax,Iz,none},
+	{0x2f,"das",none,none,none},
+
+	{0x34,"xor",al,Ib,none},
+	{0x35,"xor",eax,Iz,none},
+	{0x37,"aaa",none,none,none},
+
+	{0x3c,"cmp",al,Ib,none},
+	{0x3d,"cmp",eax,Iz,none},
+	{0x3f,"aas",none,none,none},
+
+	{0x60,"push",ad,none,none},
+	{0x61,"pop",ad,none,none},
+
+	{0x68,"push",Iz,none,none},
+	{0x6a,"push",Ib,none,none},
+
+	{0x6c,"insb",yb,dx,none},
+	{0x6d,"insd",yz,dx,none},
+	{0x6e,"outsb",dx,xb,none},
+	{0x6f,"outsd",dx,xz,none},
+
+	{0x70,"jo",jb,none,none},
+	{0x71,"jno",jb,none,none},
+	{0x72,"jb",jb,none,none},
+	{0x73,"jnb",jb,none,none},
+	{0x74,"je",jb,none,none},
+	{0x75,"jnz",jb,none,none},
+	{0x76,"jbe",jb,none,none},
+	{0x77,"ja",jb,none,none},
+	{0x78,"js",jb,none,none},
+	{0x79,"jns",jb,none,none},
+	{0x7a,"jpe",jb,none,none},
+	{0x7b,"jpo",jb,none,none},
+	{0x7c,"jl",jb,none,none},
+	{0x7d,"jge",jb,none,none},
+	{0x7e,"jle",jb,none,none},
+	{0x7f,"jg",jb,none,none},
+
+	{0x0f80,"jo",jz,none,none},
+	{0x0f81,"jno",jz,none,none},
+	{0x0f82,"jb",jz,none,none},
+	{0x0f83,"jnb",jz,none,none},
+	{0x0f84,"je",jz,none,none},
+	{0x0f85,"jnz",jz,none,none},
+	{0x0f86,"jbe",jz,none,none},
+	{0x0f87,"ja",jz,none,none},
+	{0x0f88,"js",jz,none,none},
+	{0x0f89,"jns",jz,none,none},
+	{0x0f8a,"jpe",jz,none,none},
+	{0x0f8b,"jpo",jz,none,none},
+	{0x0f8c,"jl",jz,none,none},
+	{0x0f8d,"jge",jz,none,none},
+	{0x0f8e,"jle",jz,none,none},
+	{0x0f8f,"jg",jz,none,none},
+
+
+
+
+
 	{0x8b,"mov",Gv,Ev,none}
+};
+InstructionDescriptor prefixList[]
+{
+	{0x26,"es:",none,none,none},
+	{0x2e,"cs:",none,none,none},
+	{0x36,"ss:",none,none,none},
+	{0x3e,"ds:",none,none,none},
+	{0x64,"fs:",none,none,none},
+	{0x65,"gs:",none,none,none},
+	{0x66,"operandSize:",none,none,none},
+	{0x67,"addressSize:",none,none,none},
+	{0x67,"addressSize:",none,none,none},
+	{0xf0,"lock",none,none,none},
+	{0xf2,"rep",none,none,none},
+	{0xf3,"repnz",none,none,none},
+
 };
 /*
 // TODO: 在此处添加实现代码.

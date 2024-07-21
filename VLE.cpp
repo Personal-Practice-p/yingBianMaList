@@ -6,8 +6,9 @@ int VLE::findOpcode(const CString& str)//传入整个str
 {
 	return 0;
 }
-int VLE::readOpcode(CString& str)//传入整个str
+int VLE::readOpcode(CString can_str)//传入整个str
 {
+	str = can_str;
 	unsigned int Code = 0;
 	int prefixFlag=0;
 	CString strCode;
@@ -33,7 +34,7 @@ int VLE::readOpcode(CString& str)//传入整个str
 				Handling_prefix(new指令, Code);
 				new指令.allCode = new指令.allCode + strCode;
 				TRACE("前缀:" + strCode+"\n");
-				deleteStr(str, 1);
+				deleteStr( 1);
 				
 				prefixFlag = 1;
 				break;
@@ -55,11 +56,28 @@ int VLE::readOpcode(CString& str)//传入整个str
 			TRACE("opcode:"+ strCode + v指令集[i].mnemonic +"\n");
 			Handle_Opcode(new指令, i);
 			new指令.allCode = new指令.allCode + strCode;
-			deleteStr(str, 1);
+			deleteStr( 1);
 		}
 	}
+
 	//处理modrm
-	new指令.operand1 == 
+	if (判断modrm(new指令))
+	{
+		//为true 有modrm
+		new指令.modrm= strtol(str.Mid(0, 2), NULL, 16);
+		deleteStr( 1);
+		if (判断Sib(new指令))
+		{
+			new指令.sib = strtol(str.Mid(0, 2), NULL, 16);
+			deleteStr( 1);
+		}
+	}
+	处理modrm和sib(new指令);
+	Process_operands(new指令);
+
+
+
+
 	
 
 	return 0;
@@ -70,14 +88,88 @@ void VLE::Handle_Opcode(指令解码type& new指令, int index)
 	new指令.opcode = v指令集[index].opcode;
 	new指令.mnemonic = v指令集[index].mnemonic;
 
-	new指令.operand1 = v指令集[index].operand1;
-	new指令.operand2 = v指令集[index].operand2;
-	new指令.operand3 = v指令集[index].operand3;
+	new指令.operand[0] = v指令集[index].operand1;
+	new指令.operand[1] = v指令集[index].operand2;
+	new指令.operand[2] = v指令集[index].operand3;
 	
 
 }
+void VLE::Process_operands(指令解码type& new指令)
+{
+	
+	for (int i = 0; i < 3; i++)
+	{
+		//操作数为寄存器
+		if (new指令.operand[i] >= 0x10 && new指令.operand[i] < 0x20 && new指令.Operand_Size == false)
+		{	//eax - edi  && 66==0
+			new指令.stroperand[i] = reg32[new指令.operand[i] & 0x7];
+		}
+		else if (new指令.operand[i] >= 0x20 && new指令.operand[i] < 0x30 && new指令.Operand_Size == false)
+		{
+			new指令.stroperand[i] = reg8[new指令.operand[i] & 0x7];
+		}
+		else if (new指令.operand[i] >= 0x30 && new指令.operand[i] < 0x40 && new指令.Operand_Size == false)
+		{
+			new指令.stroperand[i] = reg16[new指令.operand[i] & 0x7];
+		}
+		else if (new指令.operand[i] >= 0x10 && new指令.operand[i] < 0x20 && new指令.Operand_Size == true)
+		{
+			new指令.stroperand[i] = reg16[new指令.operand[i] & 0x7];//66 = true reg32->reg16
+		}
 
-bool VLE::deleteStr(CString& str, int num)//num是字节数
+		//操作数为立即数
+		if (new指令.operand[i] == Ib)
+		{
+			new指令.stroperand[i] = "0x" + str.Mid(0, 2);
+			new指令.allCode = new指令.allCode + str.Mid(0, 2);
+			deleteStr(1);
+		}
+		else if ((new指令.operand[i] == Iz || new指令.operand[i] == Iv) && new指令.Operand_Size == false)
+		{
+			new指令.stroperand[i] = "0x" + str.Mid(6, 2) + str.Mid(4, 2) + str.Mid(2, 2) + str.Mid(0, 2);
+			new指令.allCode = new指令.allCode + str.Mid(0, 8);
+			deleteStr(4);
+		}
+		else if ((new指令.operand[i] == Iz || new指令.operand[i] == Iv) && new指令.Operand_Size == true)
+		{
+			new指令.stroperand[i] = "0x" + str.Mid(2, 2) + str.Mid(0, 2);
+			new指令.allCode = new指令.allCode + str.Mid(0,4);
+			deleteStr(2);
+		}
+		else if (new指令.operand[i] == iw)
+		{
+			new指令.stroperand[i] = "0x" + str.Mid(2, 2) + str.Mid(0, 2);
+			new指令.allCode = new指令.allCode + str.Mid(0, 4);
+			deleteStr(2);
+		}
+		//处理jb和jz
+		if (new指令.operand[i] == jb)
+		{
+			new指令.stroperand[i] = str.Mid(0, 2);
+			new指令.allCode = new指令.allCode + str.Mid(0, 2);
+			deleteStr(1);
+		}
+		else if (new指令.operand[i] == jz && new指令.Operand_Size == false)
+		{
+			new指令.stroperand[i] = str.Mid(6, 2) + str.Mid(4, 2) + str.Mid(2, 2) + str.Mid(0, 2);
+			new指令.allCode = new指令.allCode + str.Mid(0, 8);
+			deleteStr(4);
+		}
+		else if (new指令.operand[i] == jz && new指令.Operand_Size == true)
+		{
+			new指令.stroperand[i] = str.Mid(2, 2) + str.Mid(0, 2);
+			new指令.allCode = new指令.allCode + str.Mid(0, 4);
+			deleteStr(2);
+		}
+
+		
+
+	}
+	TRACE(new指令.mnemonic + " " + new指令.stroperand[0]+"," + new指令.stroperand[1] + ","+ new指令.stroperand[2] + "\n");
+	
+}
+
+bool VLE::deleteStr(int num)//num是字节数
 {
 	str = str.Mid(num*2);
 	return true;
@@ -121,5 +213,52 @@ void VLE::Handling_prefix(指令解码type& new指令,int refix)
 		break;
 	default:
 		break;
+	}
+}
+bool VLE::判断modrm(const 指令解码type& new指令)
+{
+	if (new指令.operand[0] >= 0x60 && new指令.operand[0] < 0x70)
+	{
+		return true;
+	}
+	if (new指令.operand[1] >= 0x60 && new指令.operand[1] < 0x70)
+	{
+		return true;
+	}
+	return false;
+}
+void VLE::功能_处理operands(mnemonicType& operand, CString& stroperand)
+{
+	
+}
+
+bool VLE::判断Sib(const 指令解码type& new指令)
+{
+	
+	int imodrm = new指令.modrm;
+	if ((imodrm & 0xe0) != 0xe0)//判断是00 01 10 并且后三位是100
+	{
+		if ((imodrm & 0x07) == 0x4)
+		{
+			return true;
+		}
+	}
+
+	return false;
+	
+}
+void VLE::处理modrm和sib(指令解码type& new指令)
+{
+	if (new指令.modrm!=0)
+	{
+		new指令.reg = new指令.modrm >> 3 & 0x7;
+		new指令.mod = new指令.modrm >> 6;
+		new指令.rm = new指令.modrm & 0x7;
+	}
+	if (new指令.sib != 0)
+	{
+		new指令.scale = new指令.sib>>6;
+		new指令.index = new指令.sib >> 3 & 0x7;
+		new指令.base = new指令.sib  & 0x7;
 	}
 }

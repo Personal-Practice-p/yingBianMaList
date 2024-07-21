@@ -332,3 +332,7 @@ std::vector<InstructionDescriptor> prefixList =
 	{0xf2,"repnz",none,none,none},
 	{0xf3,"repe",none,none,none},
 };
+
+CString reg8[8] = {"al","cl","dl","bl","ah","ch","dh","bh"};
+CString reg16[8] = { "ax","cx","dx","bx","sp","bp","si","di" };
+CString reg32[8] = { "eax","ecx","edx","ebx","esp","ebp","esi","edi" };

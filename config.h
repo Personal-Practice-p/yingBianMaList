@@ -68,7 +68,7 @@ enum mnemonicType
 	Iz,
 	Iv,
 
-	Eb,
+	Eb=0x60,
 	Gb,
 	Ev,
 	Gv,
@@ -76,7 +76,7 @@ enum mnemonicType
 	Ew,//16位内存word
 	Gw,//16位寄存器
 
-	ad,
+	ad=0x70,
 	ap
 
 };
@@ -122,23 +122,20 @@ struct 指令解码type
 	bool lock=false;
 	unsigned int opcode=0;
 	CString mnemonic;           // 助记符
-	mnemonicType operand1 = none;           // 操作数1类型
-	mnemonicType operand2 = none;           // 操作数2类型
-	mnemonicType operand3 = none;           // 操作数3类型
+	mnemonicType operand[3] = {none,none,none};           // 操作数  
 
-	uint8_t modrm=0;
-	uint8_t sib=0;
+	unsigned int modrm=0;
+	unsigned int sib=0;
 	uint8_t mod=0;
-	uint8_t reg=0;
+	uint8_t reg=0;  
 	uint8_t rm=0;
 	uint8_t scale=0;
-	uint8_t index=0;
+	uint8_t index=0;												
 	uint8_t base=0;
 
 	//这个应该是计算过后的
-	CString stroperand1;           // 操作数1值
-	CString stroperand2;           // 操作数2值
-	CString stroperand3;           // 操作数3值
+	CString stroperand[3];           // 操作数值
+	
 	int length=0;
 	CString assembly;//处理好的整条反汇编指令
 	CString allCode;//这条指令的所有硬编码

@@ -31,6 +31,9 @@ int VLE::readOpcode(CString can_str)//传入整个str
 			strCode = str.Mid(0, 2);
 			Code = strtol(strCode, NULL, 16);
 			prefixFlag = 0;
+
+		
+
 			for (int i = 0; i < prefixList.size(); i++)
 			{
 				if (prefixList[i].opcode == Code)
@@ -52,6 +55,14 @@ int VLE::readOpcode(CString can_str)//传入整个str
 		}
 		int find = 0;
 		//处理opcode
+		//2个字节的
+		if (Code == 0x0f)
+		{
+			strCode.Format("%02x", Code);
+			strCode += str.Mid(2,2);
+			Code= strtol(strCode, NULL, 16);
+		}
+
 		for (int i = 0; i < v指令集.size(); i++)
 		{
 			if (v指令集[i].opcode == Code)
@@ -61,8 +72,16 @@ int VLE::readOpcode(CString can_str)//传入整个str
 				//找到
 				TRACE("opcode:" + strCode + v指令集[i].mnemonic + "\n");
 				Handle_Opcode(disb, i);
-				disb.allCode = disb.allCode + strCode;
-				deleteStr(1);
+				disb.allCode = disb.allCode + strCode+" ";
+				if (Code>0xff)//判断下是否是双字节代码
+				{
+					deleteStr(2);
+				}
+				else
+				{
+					deleteStr(1);
+				}
+				
 			}
 		}
 		//需要让这段代码只执行一次
@@ -70,11 +89,21 @@ int VLE::readOpcode(CString can_str)//传入整个str
 		{
 			onlyone = 1;
 			eorr_Opcode(disb, Code);
-			disb.allCode += str.Mid(0, 2);
-			disb.length = 1;
-			v解码指令集.push_back(disb);//ruku
 			
-			deleteStr(1);
+			
+			if (Code > 0xff)//判断下是否是双字节代码
+			{
+				disb.allCode += str.Mid(0, 4);
+				disb.length = 2;
+				deleteStr(2);
+			}
+			else
+			{
+				disb.allCode += str.Mid(0, 2);
+				disb.length = 1;
+				deleteStr(1);
+			}
+			v解码指令集.push_back(disb);//ruku
 			continue;
 		}
 		//处理modrm
@@ -95,6 +124,7 @@ int VLE::readOpcode(CString can_str)//传入整个str
 
 		Process_operands(disb);
 		v解码指令集.push_back(disb);//ruku
+		onlyone = 0;
 	}
 
 	
@@ -130,11 +160,11 @@ void VLE::Process_operands(指令解码type& disb)
 		{	//eax - edi  && 66==0
 			disb.stroperand[i] = reg32[disb.operand[i] & 0x7];
 		}
-		else if (disb.operand[i] >= 0x20 && disb.operand[i] < 0x30 && disb.Operand_Size == false)
+		else if (disb.operand[i] >= 0x20 && disb.operand[i] < 0x30 )
 		{
 			disb.stroperand[i] = reg8[disb.operand[i] & 0x7];
 		}
-		else if (disb.operand[i] >= 0x30 && disb.operand[i] < 0x40 && disb.Operand_Size == false)
+		else if (disb.operand[i] >= 0x30 && disb.operand[i] < 0x40 )
 		{
 			disb.stroperand[i] = reg16[disb.operand[i] & 0x7];
 		}
@@ -465,6 +495,7 @@ void VLE::Process_operands(指令解码type& disb)
 					deleteStr(2);
 				}
 			}
+
 		}
 		//eb
 		else if (disb.operand[i] == Eb)
@@ -663,14 +694,7 @@ void VLE::Process_operands(指令解码type& disb)
 				disb.stroperand[i].Replace("dword", "word");
 			}
 		}
-		//iw
-		if (disb.operand[i]==iw)
-		{
-			CString  strtemp = str.Mid(2, 2) + str.Mid(0, 2);
-			disb.stroperand[i] =  "0x" + strtemp ;
-			disb.allCode += str.Mid(0, 4);
-			deleteStr(2);
-		}
+		
 		//sw
 		if (disb.operand[i]==Sw)
 		{
@@ -678,7 +702,7 @@ void VLE::Process_operands(指令解码type& disb)
 		}
 
 		//m   只能是内存 dword ptr ds:[]
-		if (disb.operand[i] == m)
+		if (disb.operand[i] == m && disb.Address_Size == false)
 		{
 			if (disb.mod == 3)//r  r
 			{
@@ -723,7 +747,7 @@ void VLE::Process_operands(指令解码type& disb)
 		}
 
 		//mp  fword ptr ds:[]
-		if (disb.operand[i] == mp)
+		if (disb.operand[i] == mp && disb.Address_Size==false)
 		{
 			if (disb.mod == 3)//r  r
 			{
@@ -878,10 +902,11 @@ void VLE::Process_operands(指令解码type& disb)
 		}
 	}
 
-	TRACE(disb.mnemonic + " " + disb.stroperand[0]+"," + disb.stroperand[1] + ","+ disb.stroperand[2] + "\n");
+	
 
 
 	disb.assembly = disb.mnemonic + " " + disb.stroperand[0] + "," + disb.stroperand[1] + "," + disb.stroperand[2];
+	
 	
 	//删除尾部,和,,
 	for (int i = 0; i < 3; i++)
@@ -892,6 +917,34 @@ void VLE::Process_operands(指令解码type& disb)
 		}
 	}
 	disb.length = disb.allCode.GetLength() / 2;
+
+	//67影响的特殊指令 cdq  xlatb  jrcxz
+	if (disb.Operand_Size)
+	{
+		//cdq处理
+		if (disb.mnemonic=="cdq")
+		{
+			disb.assembly.Replace("cdq", "cwd");
+		}
+		//xlatb处理
+		if (disb.mnemonic == "xlatb")
+		{
+			disb.assembly.Replace("ebx", "bx");
+		}
+		//jrcxz处理
+		if (disb.mnemonic == "jrcxz")
+		{
+			disb.assembly.Replace("jrcxz", "jcxz");
+		}
+		
+	}
+	//0x8c mov 特殊 是word 这里做替换
+	if (disb.opcode == 0x8c)
+	{
+		disb.assembly.Replace("dword", "word");
+	}
+
+	TRACE(disb.allCode + "--" + disb.assembly + "\n");
 }
 
 bool VLE::deleteStr(int num)//num是字节数

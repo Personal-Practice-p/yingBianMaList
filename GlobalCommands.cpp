@@ -74,7 +74,7 @@ std::vector<InstructionDescriptor>v指令集 =
 	{0x0c,"or",al,Ib,none},
 	{0x0d,"or",eax,Iz,none},
 	{0x0e,"push cs",none,none,none},//不受前缀影响
-	{0x0f,"两个字节编码表",none,none,none},
+	//{0x0f,"两个字节编码表",none,none,none},
 
 	{0x14,"adc",al,Ib,none},
 	{0x15,"adc",eax,Iz,none},

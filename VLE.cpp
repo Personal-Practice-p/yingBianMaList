@@ -70,8 +70,10 @@ int VLE::readOpcode(CString can_str)//传入整个str
 		{
 			onlyone = 1;
 			eorr_Opcode(disb, Code);
-			v解码指令集.push_back(disb);//ruku
 			disb.allCode += str.Mid(0, 2);
+			disb.length = 1;
+			v解码指令集.push_back(disb);//ruku
+			
 			deleteStr(1);
 			continue;
 		}
@@ -889,7 +891,7 @@ void VLE::Process_operands(指令解码type& disb)
 			disb.assembly.Delete(disb.assembly.GetLength()-1, 1);
 		}
 	}
-
+	disb.length = disb.allCode.GetLength() / 2;
 }
 
 bool VLE::deleteStr(int num)//num是字节数
@@ -1000,7 +1002,7 @@ CString VLE::Sib处理地址偏移(指令解码type& disb)
 		{
 			CString temp;
 			temp.Format("%d", 1 << disb.scale);
-			retStr = reg32[disb.index] + "*" + temp + "0x" + str.Mid(6, 2) + str.Mid(4, 2) + str.Mid(2, 2) + str.Mid(0, 2);	
+			retStr = reg32[disb.index] + "*" + temp + "+0x" + str.Mid(6, 2) + str.Mid(4, 2) + str.Mid(2, 2) + str.Mid(0, 2);	
 			disb.allCode += str.Mid(0, 8);
 			deleteStr(4);
 		}

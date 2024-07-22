@@ -191,11 +191,15 @@ void C硬编码超级列表框Dlg::OnBnClickedOk()
 	str2.MakeLower();
 	vle.readOpcode(str2);
 	index = list1.GetItemCount();
-	for (int i = index; i < index+vle.v解码指令集.size(); i++)
+	
+	for (int i = 0; i < vle.v解码指令集.size(); i++)
 	{
-		list1.InsertItem(i, "000000000");
-		list1.SetItemText(i, 1, vle.v解码指令集[i].allCode);
-		list1.SetItemText(i, 2, vle.v解码指令集[i].assembly);
+		CString temp;
+		地址 += vle.v解码指令集[i].length;
+		temp.Format("%08X", 地址);
+		list1.InsertItem(i+ index, temp);
+		list1.SetItemText(i+ index, 1, vle.v解码指令集[i].allCode);
+		list1.SetItemText(i+ index, 2, vle.v解码指令集[i].assembly);
 	}
 	edit1.SetWindowText("");
 	// TODO: 在此添加控件通知处理程序代码

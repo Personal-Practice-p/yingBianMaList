@@ -286,7 +286,7 @@ std::vector<InstructionDescriptor>v指令集 =
 	{ 0x86,"xchg",Eb,Gb,none },
 	{ 0x87,"xchg",Ev,Gv,none },
 
-	{ 0x8c,"mov",Ev,Sw,none },
+	{ 0x8c,"mov",Ev,Sw,none },//这个Ev特殊,为word  最后做替换
 	{ 0x8d,"lea",Gv,m,none },
 	{ 0xc4,"lea",Gv,mp,none },
 	{ 0xc5,"lds",Gv,mp,none },
@@ -336,3 +336,8 @@ std::vector<InstructionDescriptor> prefixList =
 CString reg8[8] = {"al","cl","dl","bl","ah","ch","dh","bh"};
 CString reg16[8] = { "ax","cx","dx","bx","sp","bp","si","di" };
 CString reg32[8] = { "eax","ecx","edx","ebx","esp","ebp","esi","edi" };
+CString Strprefix[6] = { "es:","cs:","ss:","ds:","fs:","gs:" };
+CString adds16[8] = { "bx+si","bx+di","bp+si","bp+di","si","di","bp","bx" };
+CString swList[8] = { "es","cs","ss","ds","fs","gs","ldtr","tr" };
+CString Grp1[8] = { "add","or","adc","sbb","and","sub","xor","cmp" };
+CString Grp2[8] = { "rol","ror","rcl","rcr","shl","shr","sal","sar" };

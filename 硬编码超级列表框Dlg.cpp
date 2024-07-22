@@ -183,148 +183,159 @@ void C硬编码超级列表框Dlg::OnBnClickedOk()
 	CString str;
 	edit1.GetWindowText(str);
 	CString str2;
+	int index=0;
+	
 	str2 = str;
 	VLE vle;
+	RemoveSpaces(str2);
+	str2.MakeLower();
 	vle.readOpcode(str2);
-
-	// TODO: 在此添加控件通知处理程序代码
-	
-	CString str剩余代码;
-	int 找到 = 0;
-	int i剩余下标 = 0;
-	int index;
-	
-	CString str地址;
-	
-	edit1.GetWindowText(str);
-
-	RemoveSpaces(str);
+	index = list1.GetItemCount();
+	for (int i = index; i < index+vle.v解码指令集.size(); i++)
+	{
+		list1.InsertItem(i, "000000000");
+		list1.SetItemText(i, 1, vle.v解码指令集[i].allCode);
+		list1.SetItemText(i, 2, vle.v解码指令集[i].assembly);
+	}
 	edit1.SetWindowText("");
-	i剩余下标 = str.GetLength();
-	
-	if (str.IsEmpty())
-	{
-		MessageBox("请输入硬编码");
-		return;
-	}
-	
-	//添加循环处理
-	while (str!="")
-	{
-		找到 = 0;
-		index = list1.GetItemCount();
-		str地址.Format("%08X", 地址);
-		
-		//判断硬编码
-		for (auto it = yingbianma2.begin(); it != yingbianma2.end(); ++it) {
-			if ((*it).Hardcoding == str.Mid(0, 2))
-			{
-				list1.InsertItem(index, str地址);
-				//str地址.Format("%08X", 地址);
-				
-				//判断代码长度是否正确
-				if ((*it).Byt > str.GetLength() / 2 && (*it).Byt!=0x11)
-				{
-					MessageBox("错误:字节长度不正确!");
-					return;
-				}
-				//单字节
-				if ((*it).Byt == 1)
-				{
-					list1.SetItemText(index, 1, it->Hardcoding);
-					list1.SetItemText(index, 2, it->Assembly);
-					str = str.Mid((*it).Byt * 2);
-					地址 += (*it).Byt;
-					找到 = 1;
-					break;
-				}
-				else if ((*it).Byt == 2)
-				{
-					//2个长度的硬编码
-					list1.SetItemText(index, 1, (*it).Hardcoding + str.Mid(2, 2));
-					list1.SetItemText(index, 2, (*it).Assembly + "0x" + str.Mid(2, ((*it).Byt - 1) * 2));
-					地址 += (*it).Byt;
-					找到 = 1;
-					str = str.Mid((*it).Byt * 2);
-					break;
-				}
-				else if ((*it).Byt == 5)
-				{
-					//大于2个字节的硬编码,立即数要颠倒一下顺序
-					CString 立即数;
-					list1.SetItemText(index, 1, (*it).Hardcoding + str.Mid(2, 8));
-					立即数 = str.Mid(8, 2) + str.Mid(6, 2) + str.Mid(4, 2) + str.Mid(2, 2);
+	// TODO: 在此添加控件通知处理程序代码
+	//
+	//CString str剩余代码;
+	//int 找到 = 0;
+	//int i剩余下标 = 0;
+	//int index;
+	//
+	//CString str地址;
+	//
+	//edit1.GetWindowText(str);
 
-					list1.SetItemText(index, 2, (*it).Assembly + "0x" + 立即数);
-					地址 += (*it).Byt;
-					找到 = 1;
-					str = str.Mid((*it).Byt * 2);
-					break;
-				}
-				//else if ((*it).Byt == 0x11)
-				//{
-					//找到 = 1;
-					////变长编码处理
-					//CString modrm;
-					//CString sib;
-					//int lenth;
-					//modrm = str.Mid(2, 2);
-					//sib = str.Mid(4, 2);
-					////TRACE(modrm);
-					//
-					//if (::判断modrm是否有sib(modrm))
-					//{
-					//	//有sib
-					//	//计算长度
-					//	lenth = ::有sib计算长度(modrm, sib);
-					//}
-					//else//无sib
-					//{
-					//	//计算长度
-					//	lenth=::无sib计算长度(modrm);
-					//}
-					////知道长度,取出编码,转换成反汇编
-					////判断一下长度是否正确
-					//if (str.GetLength()< lenth*2)
-					//{
-					//	MessageBox("错误:变长编码字节长度不正确!"); 
-					//	return;
-					//}
+	//RemoveSpaces(str);
+	//edit1.SetWindowText("");
+	//i剩余下标 = str.GetLength();
+	//
+	//if (str.IsEmpty())
+	//{
+	//	MessageBox("请输入硬编码");
+	//	return;
+	//}
+	//
+	////添加循环处理
+	//while (str!="")
+	//{
+	//	找到 = 0;
+	//	index = list1.GetItemCount();
+	//	str地址.Format("%08X", 地址);
+	//	
+	//	//判断硬编码
+	//	for (auto it = yingbianma2.begin(); it != yingbianma2.end(); ++it) {
+	//		if ((*it).Hardcoding == str.Mid(0, 2))
+	//		{
+	//			list1.InsertItem(index, str地址);
+	//			//str地址.Format("%08X", 地址);
+	//			
+	//			//判断代码长度是否正确
+	//			if ((*it).Byt > str.GetLength() / 2 && (*it).Byt!=0x11)
+	//			{
+	//				MessageBox("错误:字节长度不正确!");
+	//				return;
+	//			}
+	//			//单字节
+	//			if ((*it).Byt == 1)
+	//			{
+	//				list1.SetItemText(index, 1, it->Hardcoding);
+	//				list1.SetItemText(index, 2, it->Assembly);
+	//				str = str.Mid((*it).Byt * 2);
+	//				地址 += (*it).Byt;
+	//				找到 = 1;
+	//				break;
+	//			}
+	//			else if ((*it).Byt == 2)
+	//			{
+	//				//2个长度的硬编码
+	//				list1.SetItemText(index, 1, (*it).Hardcoding + str.Mid(2, 2));
+	//				list1.SetItemText(index, 2, (*it).Assembly + "0x" + str.Mid(2, ((*it).Byt - 1) * 2));
+	//				地址 += (*it).Byt;
+	//				找到 = 1;
+	//				str = str.Mid((*it).Byt * 2);
+	//				break;
+	//			}
+	//			else if ((*it).Byt == 5)
+	//			{
+	//				//大于2个字节的硬编码,立即数要颠倒一下顺序
+	//				CString 立即数;
+	//				list1.SetItemText(index, 1, (*it).Hardcoding + str.Mid(2, 8));
+	//				立即数 = str.Mid(8, 2) + str.Mid(6, 2) + str.Mid(4, 2) + str.Mid(2, 2);
 
-					//可变长度编码转汇编(str.Mid(0,lenth*2),it->Assembly);
-					//str = str.Mid(lenth*2);
-					//CString strassembly;//返回反汇编
-					//地址 += 处理变长编码(str, strassembly, it->Assembly);//返回指令长度 和反汇编代码
-					
-					//寻找
-					
-				//	break;
-					
+	//				list1.SetItemText(index, 2, (*it).Assembly + "0x" + 立即数);
+	//				地址 += (*it).Byt;
+	//				找到 = 1;
+	//				str = str.Mid((*it).Byt * 2);
+	//				break;
+	//			}
+	//			//else if ((*it).Byt == 0x11)
+	//			//{
+	//				//找到 = 1;
+	//				////变长编码处理
+	//				//CString modrm;
+	//				//CString sib;
+	//				//int lenth;
+	//				//modrm = str.Mid(2, 2);
+	//				//sib = str.Mid(4, 2);
+	//				////TRACE(modrm);
+	//				//
+	//				//if (::判断modrm是否有sib(modrm))
+	//				//{
+	//				//	//有sib
+	//				//	//计算长度
+	//				//	lenth = ::有sib计算长度(modrm, sib);
+	//				//}
+	//				//else//无sib
+	//				//{
+	//				//	//计算长度
+	//				//	lenth=::无sib计算长度(modrm);
+	//				//}
+	//				////知道长度,取出编码,转换成反汇编
+	//				////判断一下长度是否正确
+	//				//if (str.GetLength()< lenth*2)
+	//				//{
+	//				//	MessageBox("错误:变长编码字节长度不正确!"); 
+	//				//	return;
+	//				//}
 
-				//}
-				
-				
-			}
-		}
-		int index1 = VLE::findOpcode(str);
-		if (index1 != -1)
-		{
-			//找到
-			MessageBox(std::to_string(index1).c_str());
-			找到 = 1;
-			return;
+	//				//可变长度编码转汇编(str.Mid(0,lenth*2),it->Assembly);
+	//				//str = str.Mid(lenth*2);
+	//				//CString strassembly;//返回反汇编
+	//				//地址 += 处理变长编码(str, strassembly, it->Assembly);//返回指令长度 和反汇编代码
+	//				
+	//				//寻找
+	//				
+	//			//	break;
+	//				
 
-		}
+	//			//}
+	//			
+	//			
+	//		}
+	//	}
+	//	int index1 = VLE::findOpcode(str);
+	//	if (index1 != -1)
+	//	{
+	//		//找到
+	//		MessageBox(std::to_string(index1).c_str());
+	//		找到 = 1;
+	//		return;
 
-		if (找到 == 0)
-		{
-			MessageBox("错误:没有找到的编码!"+ str.Mid(0,2));
-			break;
-		}
+	//	}
 
-	}
-	
-	
+	//	if (找到 == 0)
+	//	{
+	//		MessageBox("错误:没有找到的编码!"+ str.Mid(0,2));
+	//		break;
+	//	}
+
+	//}
+	//
+	//
 //	CDialogEx::OnOK();
 }
 

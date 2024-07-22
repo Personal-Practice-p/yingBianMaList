@@ -50,6 +50,7 @@ enum mnemonicType
 	jz,//和iz同一种操作,先写开,方便以后处理
 
 	fd,//eflage寄存器 fw是改变操作数后
+
 	yb,//byte ptr ds:[esi]
 	yz,
 	xb,//byte ptr ds:[edi]
@@ -99,7 +100,6 @@ struct prefixtype
 
 enum 段前缀enum
 {
-	p_none,
 	es,
 	cs,
 	ss,
@@ -115,7 +115,7 @@ enum repType
 };
 struct 指令解码type
 {
-	段前缀enum 段前缀= p_none;
+	段前缀enum 段前缀= ds;
 	bool Operand_Size=false;
 	bool Address_Size = false;
 	repType rep=rep_none;

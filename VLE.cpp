@@ -2,7 +2,7 @@
 #include"VLE.h"
 
 
-int VLE::findOpcode(const CString& str)//传入整个str
+int VLE::findOpcode(const CString& str)
 {
 	return 0;
 }
@@ -585,7 +585,6 @@ void VLE::Process_operands(指令解码type& disb)
 				disb.stroperand[i].Replace("dword", "word");
 			}
 		}
-
 		//fd
 		if (disb.operand[i]==fd)
 		{
@@ -598,7 +597,6 @@ void VLE::Process_operands(指令解码type& disb)
 				disb.stroperand[i] = "fd";
 			}
 		}
-
 		//yb
 		if (disb.operand[i]==yb)
 		{
@@ -659,7 +657,6 @@ void VLE::Process_operands(指令解码type& disb)
 			}
 
 		}
-
 		//ob
 		if (disb.operand[i]==ob)
 		{
@@ -701,13 +698,11 @@ void VLE::Process_operands(指令解码type& disb)
 				disb.stroperand[i].Replace("dword", "word");
 			}
 		}
-		
 		//sw
 		if (disb.operand[i]==Sw)
 		{
 			disb.stroperand[i] = swList[disb.reg];
 		}
-
 		//m   只能是内存 dword ptr ds:[]
 		if (disb.operand[i] == m && disb.Address_Size == false)
 		{
@@ -907,6 +902,7 @@ void VLE::Process_operands(指令解码type& disb)
 			disb.mnemonic = "mov";
 		}
 	}
+
 
 	disb.assembly = disb.mnemonic + " " + disb.stroperand[0] + "," + disb.stroperand[1] + "," + disb.stroperand[2];
 	

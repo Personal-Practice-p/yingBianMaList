@@ -17,6 +17,7 @@
 #define IDC_FENSHU                      1007
 #define IDC_EDIT4                       1008
 #define IDC_BUTTON3                     1009
+#define IDC_CLEAR                       1009
 
 // Next default values for new objects
 // 

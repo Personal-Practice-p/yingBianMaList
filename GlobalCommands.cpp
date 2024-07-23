@@ -130,22 +130,7 @@ std::vector<InstructionDescriptor>v指令集 =
 	{0x7e,"jle",jb,none,none},
 	{0x7f,"jg",jb,none,none},
 
-	{0x0f80,"jo",jz,none,none},
-	{0x0f81,"jno",jz,none,none},
-	{0x0f82,"jb",jz,none,none},
-	{0x0f83,"jnb",jz,none,none},
-	{0x0f84,"je",jz,none,none},
-	{0x0f85,"jnz",jz,none,none},
-	{0x0f86,"jbe",jz,none,none},
-	{0x0f87,"ja",jz,none,none},
-	{0x0f88,"js",jz,none,none},
-	{0x0f89,"jns",jz,none,none},
-	{0x0f8a,"jpe",jz,none,none},
-	{0x0f8b,"jpo",jz,none,none},
-	{0x0f8c,"jl",jz,none,none},
-	{0x0f8d,"jge",jz,none,none},
-	{0x0f8e,"jle",jz,none,none},
-	{0x0f8f,"jg",jz,none,none},
+
 
 	{0x98,"cwde",none,none,none},
 	{0x99,"cdq",none,none,none},
@@ -309,10 +294,75 @@ std::vector<InstructionDescriptor>v指令集 =
 	{ 0xd0,"Grp",Eb,num1,none },
 	{ 0xd1,"Grp",Ev,num1,none },
 	{ 0xd2,"Grp",Eb,cl,none },
-	{ 0xd3,"Grp",Ev,cl,none }
+	{ 0xd3,"Grp",Ev,cl,none },
 	//还剩下4个组编码  f 写完再研究下
 
 	//{0x8b,"mov",Gv,Ev,none}
+
+	//两个字节编码
+	{ 0x0f80,"jo",jz,none,none },
+	{ 0x0f81,"jno",jz,none,none },
+	{ 0x0f82,"jb",jz,none,none },
+	{ 0x0f83,"jnb",jz,none,none },
+	{ 0x0f84,"je",jz,none,none },
+	{ 0x0f85,"jnz",jz,none,none },
+	{ 0x0f86,"jbe",jz,none,none },
+	{ 0x0f87,"ja",jz,none,none },
+	{ 0x0f88,"js",jz,none,none },
+	{ 0x0f89,"jns",jz,none,none },
+	{ 0x0f8a,"jpe",jz,none,none },
+	{ 0x0f8b,"jpo",jz,none,none },
+	{ 0x0f8c,"jl",jz,none,none },
+	{ 0x0f8d,"jge",jz,none,none },
+	{ 0x0f8e,"jle",jz,none,none },
+	{ 0x0f8f,"jg",jz,none,none },
+
+	//0f90-0f9f  setcc eb
+	{ 0x0f90, "seto",Eb , none, none },
+	{ 0x0f91,"setno",Eb,none,none },
+	{ 0x0f92,"setb",Eb,none,none },
+	{ 0x0f93,"setae",Eb,none,none },
+	{ 0x0f94,"sete",Eb,none,none },
+	{ 0x0f95,"setne",Eb,none,none },
+	{ 0x0f96,"setbe",Eb,none,none },
+	{ 0x0f97,"seta",Eb,none,none },
+	{ 0x0f98,"sets",Eb,none,none },
+	{ 0x0f99,"setns",Eb,none,none },
+	{ 0x0f9a,"setpe",Eb,none,none },
+	{ 0x0f9b,"setpo",Eb,none,none },
+	{ 0x0f9c,"setl",Eb,none,none },
+	{ 0x0f9d,"setge",Eb,none,none },
+	{ 0x0f9e,"setle",Eb,none,none },
+	{ 0x0f9f,"setg",Eb,none,none },
+		
+	//0f40-0f4f  cmovcc Gv,Ev
+	{ 0x0f40, "comvo",Gv , Ev, none },
+	{ 0x0f41,"comvno",Gv,Ev,none },
+	{ 0x0f42,"comvb",Gv,Ev,none },
+	{ 0x0f43,"comvnb",Gv,Ev,none },
+	{ 0x0f44,"comve",Gv,Ev,none },
+	{ 0x0f45,"comvne",Gv,Ev,none },
+	{ 0x0f46,"comvbe",Gv,Ev,none },
+	{ 0x0f47,"comva",Gv,Ev,none },
+	{ 0x0f48,"comvs",Gv,Ev,none },
+	{ 0x0f49,"comvns",Gv,Ev,none },
+	{ 0x0f4a,"comvpe",Gv,Ev,none },
+	{ 0x0f4b,"comvpo",Gv,Ev,none },
+	{ 0x0f4c,"comvl",Gv,Ev,none },
+	{ 0x0f4d,"comvge",Gv,Ev,none },
+	{ 0x0f4e,"comvle",Gv,Ev,none },
+	{ 0x0f4f,"comvg",Gv,Ev,none },
+
+	//0fa0-0fa9	
+	{ 0x0fa0,"push fs",none,none,none },
+	{ 0x0fa1,"pop fs",none,none,none },
+	{ 0x0fa8,"push gs",none,none,none },
+	{ 0x0fa9,"pop gs",none,none,none },
+
+	{ 0x0fb2,"lss",Gv,mp,none },
+	{ 0x0fb4,"lfs",Gv,mp,none },
+	{ 0x0fb5,"lgs",Gv,mp,none }
+
 };
 std::vector<InstructionDescriptor> prefixList =
 {

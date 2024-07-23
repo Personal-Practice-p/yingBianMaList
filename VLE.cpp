@@ -110,13 +110,20 @@ int VLE::readOpcode(CString can_str)//传入整个str
 		if (判断modrm(disb))
 		{
 			//为true 有modrm
+			if (str.IsEmpty())
+			{
+				disb.assembly = "db 00";
+				v解码指令集.push_back(disb);//ruku
+				continue;
+			}
+
 			disb.modrm = strtol(str.Mid(0, 2), NULL, 16);
-			disb.allCode += str.Mid(0, 2);
+			disb.allCode += str.Mid(0, 2)+" ";
 			deleteStr(1);
 			if (判断Sib(disb))
 			{
 				disb.sib = strtol(str.Mid(0, 2), NULL, 16);
-				disb.allCode += str.Mid(0, 2);
+				disb.allCode += str.Mid(0, 2)+ " ";
 				deleteStr(1);
 			}
 		}
@@ -877,7 +884,6 @@ void VLE::Process_operands(指令解码type& disb)
 				deleteStr(6);
 			}
 		}
-
 	}
 
 
@@ -902,11 +908,7 @@ void VLE::Process_operands(指令解码type& disb)
 		}
 	}
 
-	
-
-
 	disb.assembly = disb.mnemonic + " " + disb.stroperand[0] + "," + disb.stroperand[1] + "," + disb.stroperand[2];
-	
 	
 	//删除尾部,和,,
 	for (int i = 0; i < 3; i++)

@@ -60,8 +60,7 @@ enum mnemonicType
 	ob,
 	iw,	//imm16
 	Sw,	// 段寄存器的选择子  es - gs
-	m,	//只能内存
-	mp,	//fword ptr ds:[]
+
 	num1,	//只能是1
 
 	none,
@@ -76,7 +75,8 @@ enum mnemonicType
 	Ma,//qword ptr ds:[]
 	Ew,//16位内存word
 	Gw,//16位寄存器
-
+	m,	//只能内存
+	mp,	//fword ptr ds:[]
 	ad=0x70,
 	ap
 

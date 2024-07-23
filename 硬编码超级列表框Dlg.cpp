@@ -77,6 +77,7 @@ BEGIN_MESSAGE_MAP(C硬编码超级列表框Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &C硬编码超级列表框Dlg::OnBnClickedButton1)
 	ON_EN_CHANGE(IDC_EDIT3, &C硬编码超级列表框Dlg::OnEnChangeEdit3)
 	ON_EN_CHANGE(IDC_EDIT1, &C硬编码超级列表框Dlg::OnChangeEdit1)
+	ON_BN_CLICKED(IDC_CLEAR, &C硬编码超级列表框Dlg::OnBnClickedClear)
 END_MESSAGE_MAP()
 
 
@@ -187,7 +188,13 @@ void C硬编码超级列表框Dlg::OnBnClickedOk()
 	
 	str2 = str;
 	VLE vle;
+	
+	//发现首位有/n/t 删除一下
+	str2.Remove('\n');
+	str2.Remove('\t');
+	str2.Remove('\r');
 	RemoveSpaces(str2);
+
 	str2.MakeLower();
 	vle.readOpcode(str2);
 	index = list1.GetItemCount();
@@ -939,4 +946,13 @@ int C硬编码超级列表框Dlg::初始化硬编码map()
 
 
 	return 0;
+}
+
+
+void C硬编码超级列表框Dlg::OnBnClickedClear()
+{
+
+
+	// TODO: 在此添加控件通知处理程序代码
+	list1.DeleteAllItems();
 }

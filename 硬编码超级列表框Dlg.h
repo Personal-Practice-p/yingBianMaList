@@ -51,6 +51,7 @@ public:
 	CStatic biaoqian1;
 	afx_msg void OnEnChangeEdit3();
 	afx_msg void OnChangeEdit1();
+	afx_msg void OnBnClickedClear();
 };
 bool 判断modrm是否有sib(CString modrm);
 int 无sib计算长度(CString opmod);
